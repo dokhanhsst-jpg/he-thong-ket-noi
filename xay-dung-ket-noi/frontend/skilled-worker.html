@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thợ lành nghề - Nhận công việc | Xây Dựng Kết Nối</title>
+  <style>
+    :root {
+      --navy: #10233F;
+      --navy-deep: #0A1830;
+      --orange: #FF5A1F;
+      --orange-dark: #D8460E;
+      --paper: #F4F1EA;
+      --white: #ffffff;
+      --ink: #191E28;
+      --muted: #667283;
+      --line: rgba(16, 35, 63, 0.12);
+      --blue: #6FA8DC;
+      --blue-soft: #EAF4FF;
+      --green: #2D8A5E;
+      --gold: #F5B942;
+      --shadow: 0 18px 40px rgba(16, 35, 63, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #f9fafd 0%, #f0f5f9 100%);
+      color: var(--ink);
+    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    button, input, select { font: inherit; }
+    .wrap { max-width: 1220px; margin: 0 auto; padding: 0 20px; }
+
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(10px);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 76px;
+      gap: 18px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--navy);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .nav-links a:hover { color: var(--navy); }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--orange); color: #fff; }
+    .btn-primary:hover { background: var(--orange-dark); }
+    .btn-secondary { background: #fff; border-color: var(--line); color: var(--navy); }
+
+    .page { padding: 28px 0 60px; }
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #173f68 100%);
+      border-radius: 28px;
+      color: #fff;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(111,168,220,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(111,168,220,0.14) 1px, transparent 1px);
+      background-size: 26px 26px;
+      opacity: 0.5;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+      align-items: center;
+    }
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #dfeafc;
+    }
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(30px, 3vw, 46px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+    .hero h1 span { color: #a7d4ff; }
+    .lead {
+      max-width: 620px;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #dce8f9;
+      margin-bottom: 24px;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0 0;
+    }
+    .filter-chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: #ebf3ff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .profile-summary {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 22px;
+      padding: 22px;
+      backdrop-filter: blur(6px);
+    }
+    .summary-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .avatar {
+      width: 62px;
+      height: 62px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #9ed0ff 0%, #ffb38f 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--navy-deep);
+      font-size: 26px;
+      font-weight: 800;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+    }
+    .online {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(45, 138, 94, 0.18);
+      color: #d9f7ea;
+      font-weight: 700;
+      font-size: 12px;
+    }
+    .online::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: #40d28b;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .summary-name {
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .summary-role {
+      color: #dfeafc;
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .mini-stat {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 14px 12px;
+    }
+    .mini-stat strong {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    .mini-stat span {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #d6e5fc;
+    }
+
+    .request-grid {
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr) 280px;
+      gap: 22px;
+      margin-top: 26px;
+    }
+    .request-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .request-card + .request-card {
+      margin-top: 16px;
+    }
+    .request-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+    .request-head h4 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+    .request-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .request-badge.new { background: rgba(111,168,220,0.12); color: var(--navy); }
+    .request-badge.hot { background: rgba(255,90,31,0.12); color: var(--orange-dark); }
+    .request-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .request-text {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    .request-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .mini-tag {
+      background: #f4f8ff;
+      border: 1px solid rgba(111,168,220,0.18);
+      color: var(--navy);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .request-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .price {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -0.04em;
+    }
+    .price small {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .take-btn {
+      border: none;
+      background: var(--orange);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .take-btn:hover { background: var(--orange-dark); }
+
+    .side-panel {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .side-panel h4 {
+      margin: 0 0 16px;
+      font-size: 18px;
+    }
+    .info-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .info-block {
+      background: #f8fbff;
+      border: 1px solid rgba(111,168,220,0.18);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .info-block .label {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .info-block strong {
+      font-size: 16px;
+      color: var(--navy);
+    }
+    .small-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .small-item {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: #fff;
+    }
+    .small-item strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+    .small-item span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .accept-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .accept-item {
+      background: linear-gradient(180deg, #fff, #fff9f6);
+      border: 1px solid rgba(255,90,31,0.12);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .accept-item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+    .accept-item span {
+      color: var(--muted);
+      font-size: 13px;
+      display: block;
+      line-height: 1.6;
+    }
+
+    footer {
+      background: var(--navy-deep);
+      color: #b7c3d9;
+      padding: 32px 0;
+      margin-top: 52px;
+    }
+    .foot {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    @media (max-width: 980px) {
+      .request-grid { grid-template-columns: 1fr; }
+      .hero-content { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .nav-links { display: none; }
+      .filter-row { margin-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">H</span>
+        <span>Xây Dựng Kết Nối</span>
+      </a>
+      <nav class="nav-links">
+        <a href="index.html">Trang chủ</a>
+        <a href="#yeu-cau">Yêu cầu</a>
+        <a href="#viec-nhan">Việc đã nhận</a>
+        <a href="my-reviews.html">Đánh giá</a>
+      </nav>
+      <div class="nav-actions" id="navActions">
+        <a class="btn btn-secondary" href="dangnhap.html">Đăng xuất</a>
+        <a class="btn btn-primary" href="worker.html">Hồ sơ</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page wrap">
+    <section class="hero" id="yeu-cau">
+      <div class="hero-content">
+        <div>
+          <span class="eyebrow">Thợ lành nghề</span>
+          <h1>Nhận công việc<br><span>từ khách hàng cần sửa chữa.</span></h1>
+          <p class="lead">Xem những yêu cầu mới từ khách hàng trong khu vực của bạn, so sánh ngân sách, kiểm tra chi tiết công việc và chốt nhận việc ngay trong vài phút.</p>
+          <div class="hero-actions">
+            <a href="worker.html" class="btn btn-primary">Cập nhật hồ sơ</a>
+            <a href="dangnhap.html" class="btn btn-secondary">Quay lại</a>
+          </div>
+          <div class="filter-row">
+            <span class="filter-chip">Hà Nội • 5km</span>
+            <span class="filter-chip">Sửa nhà</span>
+            <span class="filter-chip">Trần - tường</span>
+            <span class="filter-chip">Điện nước</span>
+          </div>
+        </div>
+
+        <div class="profile-summary">
+          <div class="summary-top">
+            <div class="avatar">LT</div>
+            <span class="online">Đang hoạt động</span>
+          </div>
+          <div class="summary-name">Phùng Đức Anh</div>
+          <div class="summary-role">Thợ sửa nhà • 8 năm kinh nghiệm</div>
+          <div class="summary-stats">
+            <div class="mini-stat">
+              <strong>21</strong>
+              <span>Yêu cầu mới</span>
+            </div>
+            <div class="mini-stat">
+              <strong>4.9</strong>
+              <span>Đánh giá</span>
+            </div>
+            <div class="mini-stat">
+              <strong>7</strong>
+              <span>Đã nhận</span>
+            </div>
+            <div class="mini-stat">
+              <strong>93%</strong>
+              <span>Phản hồi</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="request-grid">
+      <aside class="side-panel">
+        <h4>Thông tin thợ</h4>
+        <div class="info-stack">
+          <div class="info-block">
+            <span class="label">Kích hoạt</span>
+            <strong>Hôm nay</strong>
+          </div>
+          <div class="info-block">
+            <span class="label">Khu vực</span>
+            <strong>Long Biên, Hà Nội</strong>
+          </div>
+          <div class="info-block">
+            <span class="label">Chuyên môn</span>
+            <strong>Trần, tường, điện nước</strong>
+          </div>
+        </div>
+
+        <h4 style="margin-top: 18px;">Mức ưu tiên</h4>
+        <div class="small-list">
+          <div class="small-item">
+            <strong>Ưu tiên gần địa điểm</strong>
+            <span>Nhận các yêu cầu trong bán kính 5km để tiết kiệm thời gian.</span>
+          </div>
+          <div class="small-item">
+            <strong>Phù hợp kỹ thuật</strong>
+            <span>Chọn công việc cần sửa trần, tường, điện nước, nhà ở nhỏ.</span>
+          </div>
+        </div>
+      </aside>
+
+      <section id="dsViecMo">
+        <div class="request-card"><p class="request-text">Đang tải danh sách yêu cầu...</p></div>
+      </section>
+
+      <aside class="side-panel" id="viec-nhan">
+        <h4>Việc bạn đã nhận</h4>
+        <div class="accept-list" id="dsViecDaNhan">Đang tải...</div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <div><strong style="color:#fff;display:block;margin-bottom:6px;">Xây Dựng Kết Nối</strong><span>Hệ thống kết nối khách hàng và thợ lành nghề</span></div>
+      <div>© 2026 | Giao diện thợ nhận công việc</div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script>
+    API.initNav('worker');
+
+    function requestCard(r) {
+      const budget = r.ngan_sach_tu != null
+        ? `${Number(r.ngan_sach_tu).toLocaleString('vi-VN')} - ${Number(r.ngan_sach_den).toLocaleString('vi-VN')} đ`
+        : 'Thoả thuận';
+      return `
+        <div class="request-card">
+          <div class="request-head">
+            <h4>${API.escapeHtml(r.tieu_de)}</h4>
+            <span class="request-badge new">${API.escapeHtml(r.trang_thai)}</span>
+          </div>
+          <div class="request-meta">
+            <span>${API.escapeHtml(r.ten_khu_vuc || '')}</span>
+            <span>•</span>
+            <span>${API.escapeHtml(r.ten_chuyen_mon || '')}</span>
+          </div>
+          <p class="request-text">${API.escapeHtml(r.mo_ta || '')}</p>
+          <div class="request-bottom">
+            <div class="price">${budget} <small>Ngân sách</small></div>
+            <button class="take-btn" data-id="${r.id}">Nhận việc</button>
+          </div>
+        </div>`;
+    }
+
+    async function taiViecMo() {
+      const box = document.getElementById('dsViecMo');
+      try {
+        const rows = await API.get('/yeu-cau');
+        box.innerHTML = rows.length ? rows.map(requestCard).join('') : '<div class="request-card"><p class="request-text">Hiện chưa có yêu cầu nào phù hợp.</p></div>';
+        box.querySelectorAll('.take-btn').forEach((btn) => btn.addEventListener('click', () => nhanViec(btn)));
+      } catch (e) {
+        box.innerHTML = `<div class="request-card"><p class="request-text">${API.escapeHtml(e.message)}</p></div>`;
+      }
+    }
+
+    const TRANG_THAI_TEXT = { dang_thuc_hien: 'Đang thực hiện', hoan_thanh: 'Đã hoàn tất', huy: 'Đã huỷ' };
+
+    async function taiViecDaNhan() {
+      const box = document.getElementById('dsViecDaNhan');
+      try {
+        const rows = await API.get('/cong-viec/me');
+        box.innerHTML = rows.length ? rows.map(v => `
+          <div class="accept-item">
+            <strong>${API.escapeHtml(v.tieu_de)}</strong>
+            <span>Khách hàng: ${API.escapeHtml(v.ten_khach_hang || '')}<br>Trạng thái: ${API.escapeHtml(TRANG_THAI_TEXT[v.trang_thai] || v.trang_thai)}</span>
+          </div>
+        `).join('') : '<div class="accept-item"><span>Bạn chưa nhận việc nào.</span></div>';
+      } catch (e) {
+        box.innerHTML = `<div class="accept-item"><span>${API.escapeHtml(e.message)}</span></div>`;
+      }
+    }
+
+    async function nhanViec(btn) {
+      btn.disabled = true;
+      btn.textContent = 'Đang nhận việc...';
+      try {
+        const yeuCauId = Number(btn.dataset.id);
+        await API.post(`/yeu-cau/${yeuCauId}/nhan-viec`);
+        await Promise.all([taiViecMo(), taiViecDaNhan()]);
+      } catch (e) {
+        alert(e.message);
+        btn.disabled = false;
+        btn.textContent = 'Nhận việc';
+      }
+    }
+
+    taiViecMo();
+    taiViecDaNhan();
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+# Thư viện (cài lại bằng npm install)
+node_modules/
+
+# Mật khẩu và khóa bí mật — TUYỆT ĐỐI không đưa lên Git
+.env
+.env.*
+!.env.example
+
+# Ảnh người dùng tải lên (giữ lại thư mục rỗng bằng .gitkeep)
+uploads/*
+!uploads/.gitkeep
+
+# Log
+*.log
+npm-debug.log*
+
+# File của hệ điều hành / trình soạn thảo
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Sao lưu CSDL (có thể chứa dữ liệu thật)
+*.dump
+backup/

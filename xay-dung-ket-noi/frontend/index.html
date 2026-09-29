@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xây Dựng Kết Nối — Kết nối thợ và khách hàng minh bạch</title>
+<meta name="description" content="Nền tảng kết nối nhanh chóng giữa khách hàng có nhu cầu sửa chữa, xây dựng với đội ngũ thợ lành nghề.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#10233F;
+    --navy-deep:#0A1830;
+    --blueline:#6FA8DC;
+    --blueline-soft:#B8D3ED;
+    --orange:#FF5A1F;
+    --orange-dark:#D8460E;
+    --paper:#EFEDE4;
+    --paper-white:#F8F7F2;
+    --ink:#15181F;
+    --concrete:#726C5F;
+    --concrete-light:#9A9484;
+    --line-hair:rgba(21,24,31,0.12);
+    --line-hair-dark:rgba(255,255,255,0.14);
+    --radius:6px;
+    --wrap:1180px;
+    --disp: 'Space Grotesk', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --body: 'Inter', sans-serif;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *,*::before,*::after{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+  body{
+    margin:0;
+    font-family:var(--body);
+    color:var(--ink);
+    background:var(--paper-white);
+    -webkit-font-smoothing:antialiased;
+  }
+  img,svg{display:block;max-width:100%;}
+  a{color:inherit;text-decoration:none;}
+  ul{margin:0;padding:0;list-style:none;}
+  h1,h2,h3{font-family:var(--disp);margin:0;line-height:1.08;letter-spacing:-0.01em;}
+  p{margin:0;}
+  button{font-family:inherit;cursor:pointer;}
+
+  .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px;}
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    font-weight:500;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:14px;height:1px;
+    background:currentColor;
+    display:inline-block;
+  }
+  .eyebrow.on-light{color:var(--orange-dark);}
+  .eyebrow.on-dark{color:var(--blueline);}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:13px 24px;
+    font-family:var(--body);
+    font-weight:600;
+    font-size:14.5px;
+    border-radius:4px;
+    border:1.5px solid transparent;
+    transition:transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, color .15s ease;
+    white-space:nowrap;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{
+    background:var(--orange);
+    color:#fff;
+  }
+  .btn-primary:hover{background:var(--orange-dark);}
+  .btn-outline-dark{
+    border-color:rgba(255,255,255,0.4);
+    color:#fff;
+    background:transparent;
+  }
+  .btn-outline-dark:hover{border-color:#fff;background:rgba(255,255,255,0.08);}
+  .btn-outline-light{
+    border-color:rgba(21,24,31,0.25);
+    color:var(--ink);
+    background:transparent;
+  }
+  .btn-outline-light:hover{border-color:var(--ink);}
+  .btn-ghost-nav{
+    color:var(--ink);
+    font-family:var(--body);
+    font-weight:600;
+    font-size:14.5px;
+    padding:8px 4px;
+  }
+
+  :focus-visible{
+    outline:2.5px solid var(--orange);
+    outline-offset:2px;
+  }
+
+  /* ---------- Blueprint grid texture ---------- */
+  .grid-bg{
+    background-image:
+      linear-gradient(rgba(111,168,220,0.16) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(111,168,220,0.16) 1px, transparent 1px);
+    background-size:34px 34px;
+  }
+
+  /* ---------- Nav ---------- */
+  header{
+    position:sticky;top:0;z-index:100;
+    background:rgba(248,247,242,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line-hair);
+  }
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    height:76px;
+  }
+  .logo{
+    display:flex;align-items:center;gap:10px;
+    font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:-0.01em;
+  }
+  .logo .mark{
+    width:32px;height:32px;border-radius:4px;
+    background:var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .logo .mark svg{width:18px;height:18px;}
+  .nav-links{display:flex;align-items:center;gap:34px;}
+  .nav-cta{display:flex;align-items:center;gap:12px;}
+  .nav-toggle{
+    display:none;
+    width:40px;height:40px;
+    border:1px solid var(--line-hair);
+    border-radius:4px;
+    background:none;
+    align-items:center;justify-content:center;
+  }
+  .nav-toggle span, .nav-toggle span::before, .nav-toggle span::after{
+    content:"";display:block;width:18px;height:1.5px;background:var(--ink);position:relative;transition:.2s;
+  }
+  .nav-toggle span::before{position:absolute;top:-6px;}
+  .nav-toggle span::after{position:absolute;top:6px;}
+
+  @media (max-width:860px){
+    .nav-links{
+      position:absolute;top:76px;left:0;right:0;
+      background:var(--paper-white);
+      flex-direction:column;
+      align-items:flex-start;
+      gap:0;
+      border-bottom:1px solid var(--line-hair);
+      max-height:0;overflow:hidden;
+      transition:max-height .25s ease;
+    }
+    .nav-links.open{max-height:320px;}
+    .nav-links a{padding:16px 24px;width:100%;border-bottom:1px solid var(--line-hair);}
+    .nav-cta{display:none;}
+    .nav-toggle{display:flex;}
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:var(--navy);
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+    padding:76px 0 0;
+  }
+  .hero::before{
+    content:"";
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(111,168,220,0.14) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(111,168,220,0.14) 1px, transparent 1px);
+    background-size:40px 40px;
+    mask-image:linear-gradient(to bottom, black, transparent 85%);
+    pointer-events:none;
+  }
+  .hero-inner{
+    position:relative;z-index:1;
+    display:grid;
+    grid-template-columns:1.05fr 0.95fr;
+    gap:50px;
+    align-items:center;
+    padding:64px 0 0;
+  }
+  @media (max-width:960px){
+    .hero-inner{grid-template-columns:1fr;padding-top:40px;gap:36px;}
+  }
+  .hero h1{
+    font-size:clamp(34px, 4.6vw, 56px);
+    font-weight:700;
+    margin:20px 0 22px;
+    color:#fff;
+  }
+  .hero h1 em{
+    font-style:normal;
+    color:var(--orange);
+  }
+  .hero p.lead{
+    font-size:17px;
+    line-height:1.65;
+    color:#C9D3E4;
+    max-width:520px;
+    margin-bottom:34px;
+  }
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:52px;}
+
+  .stat-strip{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    border-top:1px solid rgba(255,255,255,0.16);
+  }
+  .stat{
+    padding:22px 0;
+    border-right:1px solid rgba(255,255,255,0.16);
+  }
+  .stat:last-child{border-right:none;}
+  .stat .num{font-family:var(--disp);font-weight:700;font-size:clamp(22px,2.6vw,30px);color:#fff;}
+  .stat .label{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:#9FB0C9;margin-top:6px;}
+  @media (max-width:640px){
+    .stat-strip{grid-template-columns:1fr;}
+    .stat{border-right:none;border-bottom:1px solid rgba(255,255,255,0.16);}
+    .stat:last-child{border-bottom:none;}
+  }
+
+  /* Hero blueprint illustration */
+  .hero-art{position:relative;}
+  .hero-art svg{width:100%;height:auto;}
+  .blueprint-tag{
+    position:absolute;
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--blueline-soft);
+    letter-spacing:.03em;
+  }
+
+  /* ---------- Section shells ---------- */
+  section{padding:96px 0;}
+  @media (max-width:640px){section{padding:64px 0;}}
+  .section-head{max-width:640px;margin-bottom:56px;}
+  .section-head h2{font-size:clamp(26px,3.2vw,38px);margin-top:14px;color:var(--ink);}
+  .section-head p{margin-top:16px;color:var(--concrete);font-size:15.5px;line-height:1.65;}
+  .section-light{background:var(--paper-white);}
+  .section-tint{background:var(--paper);}
+  .section-dark{background:var(--navy-deep);color:#fff;}
+  .section-dark .section-head p{color:#A9B4C8;}
+
+  /* ---------- Problem cards ---------- */
+  .problem-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--line-hair);
+    border:1px solid var(--line-hair);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  @media (max-width:760px){.problem-grid{grid-template-columns:1fr;}}
+  .problem-card{background:var(--paper-white);padding:38px 36px;}
+  .problem-card .ic-row{display:flex;align-items:center;gap:14px;margin-bottom:22px;}
+  .problem-card .ic{
+    width:44px;height:44px;border-radius:4px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .problem-card.customer .ic{background:rgba(255,90,31,0.12);color:var(--orange-dark);}
+  .problem-card.worker .ic{background:rgba(111,168,220,0.18);color:#2E5D8F;}
+  .problem-card h3{font-size:19px;font-weight:600;}
+  .problem-card li{
+    display:flex;gap:10px;
+    font-size:14.5px;line-height:1.6;color:var(--ink);
+    padding:10px 0;
+    border-top:1px solid var(--line-hair);
+  }
+  .problem-card li:first-of-type{border-top:none;padding-top:0;}
+  .problem-card li::before{
+    content:"—";
+    color:var(--concrete-light);
+    flex-shrink:0;
+  }
+
+  /* ---------- Feature grid ---------- */
+  .feature-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1px;
+    background:var(--line-hair);
+    border:1px solid var(--line-hair);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  @media (max-width:860px){.feature-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.feature-grid{grid-template-columns:1fr;}}
+  .feature-card{
+    background:var(--paper-white);
+    padding:32px 28px;
+    transition:background .18s ease;
+  }
+  .feature-card:hover{background:var(--paper);}
+  .feature-card .ic{
+    width:42px;height:42px;border-radius:50%;
+    background:var(--navy);color:var(--blueline-soft);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:20px;
+  }
+  .feature-card .ic svg{width:20px;height:20px;}
+  .feature-card h3{font-size:16px;font-weight:600;margin-bottom:8px;}
+  .feature-card p{font-size:13.8px;line-height:1.6;color:var(--concrete);}
+
+  /* ---------- Customer / worker system ---------- */
+  .system-shell{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+    margin-top:12px;
+  }
+  @media (max-width:840px){.system-shell{grid-template-columns:1fr;}}
+  .role-panel{
+    position:relative;
+    border:1px solid var(--line-hair);
+    border-radius:18px;
+    overflow:hidden;
+    background:var(--paper-white);
+    box-shadow:0 14px 28px rgba(16,35,63,0.04);
+  }
+  .role-panel.customer{background:linear-gradient(180deg, rgba(255,90,31,0.05), rgba(255,90,31,0.02));}
+  .role-panel.worker{background:linear-gradient(180deg, rgba(111,168,220,0.08), rgba(111,168,220,0.02));}
+  .role-header{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:16px;
+    padding:24px 24px 18px;
+    border-bottom:1px solid var(--line-hair);
+  }
+  .role-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    border-radius:999px;
+    padding:7px 12px;
+    font-family:var(--mono);
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    background:#fff;
+    border:1px solid rgba(16,35,63,0.08);
+  }
+  .role-panel.customer .role-badge{color:var(--orange-dark);}
+  .role-panel.worker .role-badge{color:#2E5D8F;}
+  .role-body{padding:24px;}
+  .role-body h3{font-size:28px;line-height:1.12;margin-bottom:14px;}
+  .role-body p{color:var(--concrete);font-size:14.7px;line-height:1.68;margin-bottom:20px;}
+  .check-list{display:flex;flex-direction:column;gap:12px;}
+  .check-list li{
+    display:flex;align-items:flex-start;gap:10px;
+    background:rgba(255,255,255,0.46);
+    border:1px solid rgba(16,35,63,0.06);
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:14px;line-height:1.55;color:var(--ink);
+  }
+  .check-list li::before{
+    content:"✓";
+    display:inline-flex;
+    align-items:center;justify-content:center;
+    width:20px;height:20px;
+    flex-shrink:0;
+    border-radius:50%;
+    background:rgba(16,35,63,0.08);
+    font-family:var(--mono);
+    font-weight:700;
+    font-size:12px;
+    color:var(--navy);
+  }
+  .mini-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:12px;
+    margin-top:18px;
+  }
+  .mini-card{
+    background:rgba(255,255,255,0.58);
+    border:1px solid rgba(16,35,63,0.06);
+    border-radius:12px;
+    padding:12px 14px;
+  }
+  .mini-card .num{font-family:var(--disp);font-size:24px;letter-spacing:-0.04em;}
+  .mini-card .txt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--concrete);margin-top:5px;}
+  .role-panel.customer .mini-card .num{color:var(--orange-dark);}
+  .role-panel.worker .mini-card .num{color:#2E5D8F;}
+
+  /* ---------- Process ---------- */
+  .process-track{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    position:relative;
+  }
+  @media (max-width:900px){
+    .process-track{grid-template-columns:1fr;gap:28px;}
+  }
+  .process-track::before{
+    content:"";
+    position:absolute;
+    top:26px;left:calc(100%/12);right:calc(100%/12);
+    height:1px;
+    background-image:linear-gradient(to right, var(--blueline) 0 6px, transparent 6px 12px);
+    background-size:12px 1px;
+  }
+  @media (max-width:900px){.process-track::before{display:none;}}
+  .process-step{position:relative;padding:0 14px;text-align:left;}
+  .process-step .tick{
+    width:52px;height:52px;border-radius:50%;
+    background:var(--paper-white);
+    border:1.5px solid var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-weight:500;font-size:13px;color:var(--navy);
+    position:relative;z-index:1;
+    margin-bottom:18px;
+  }
+  .process-step h3{font-size:15px;font-weight:600;margin-bottom:6px;}
+  .process-step p{font-size:13px;color:var(--concrete);line-height:1.55;}
+
+  /* ---------- Differentiators ---------- */
+  .diff-list{display:flex;flex-direction:column;}
+  .diff-row{
+    display:grid;
+    grid-template-columns:280px 1fr;
+    gap:32px;
+    padding:26px 0;
+    border-top:1px solid var(--line-hair);
+    align-items:start;
+  }
+  .diff-row:last-child{border-bottom:1px solid var(--line-hair);}
+  @media (max-width:700px){.diff-row{grid-template-columns:1fr;gap:10px;}}
+  .diff-row .diff-label{
+    display:flex;align-items:center;gap:12px;
+    font-family:var(--disp);font-weight:600;font-size:16px;
+  }
+  .diff-row .diff-label .ic{
+    width:34px;height:34px;border-radius:4px;
+    background:rgba(255,90,31,0.12);color:var(--orange-dark);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .diff-row .diff-label .ic svg{width:17px;height:17px;}
+  .diff-row p{font-size:14.5px;line-height:1.65;color:var(--concrete);align-self:center;}
+
+  /* ---------- Impact ---------- */
+  .impact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-hair-dark);border:1px solid var(--line-hair-dark);border-radius:var(--radius);overflow:hidden;}
+  @media (max-width:760px){.impact-grid{grid-template-columns:1fr;}}
+  .impact-card{background:var(--navy-deep);padding:34px 30px;}
+  .impact-card .ic{width:40px;height:40px;border-radius:50%;background:rgba(111,168,220,0.15);color:var(--blueline);display:flex;align-items:center;justify-content:center;margin-bottom:18px;}
+  .impact-card .ic svg{width:19px;height:19px;}
+  .impact-card h3{font-size:18px;font-weight:600;color:#fff;margin-bottom:14px;}
+  .impact-card li{font-size:13.8px;line-height:1.65;color:#B7C1D6;padding:7px 0;display:flex;gap:9px;}
+  .impact-card li::before{content:"·";color:var(--blueline);font-weight:700;}
+
+  /* ---------- Final CTA ---------- */
+  .cta-final{
+    background:var(--navy);
+    color:#fff;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .cta-final .wrap{position:relative;z-index:1;}
+  .cta-final h2{font-size:clamp(28px,4vw,42px);max-width:680px;margin:16px auto 18px;color:#fff;}
+  .cta-final p{color:#C9D3E4;font-size:16px;max-width:520px;margin:0 auto 34px;}
+  .cta-final .hero-ctas{justify-content:center;margin-bottom:0;}
+
+  /* ---------- Footer ---------- */
+  footer{background:var(--navy-deep);color:#8C97AC;padding:52px 0 30px;}
+  .foot-top{
+    display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;
+    padding-bottom:36px;border-bottom:1px solid rgba(255,255,255,0.1);
+    margin-bottom:24px;
+  }
+  .foot-brand .logo{color:#fff;}
+  .foot-brand p{font-size:13.5px;color:#8C97AC;margin-top:12px;max-width:280px;line-height:1.6;}
+  .foot-cols{display:flex;gap:64px;flex-wrap:wrap;}
+  .foot-col h4{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#5E6A80;margin-bottom:14px;}
+  .foot-col a{display:block;font-size:13.8px;color:#B7C1D6;padding:5px 0;}
+  .foot-col a:hover{color:#fff;}
+  .foot-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12.5px;color:#5E6A80;font-family:var(--mono);}
+
+  /* ---------- Reveal on scroll ---------- */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="logo">
+      <span class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v9h14v-9"/><path d="M10 19v-6h4v6"/></svg>
+      </span>
+      XÂY DỰNG KẾT NỐI
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#van-de" class="btn-ghost-nav">Vấn đề</a>
+      <a href="#giai-phap" class="btn-ghost-nav">Giải pháp</a>
+      <a href="#quy-trinh" class="btn-ghost-nav">Quy trình</a>
+      <a href="#hieu-qua" class="btn-ghost-nav">Hiệu quả</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="dangnhap.html" class="btn-ghost-nav">Đăng nhập</a>
+      <a href="register.html" class="btn btn-primary">Đăng ký</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Mở menu" aria-expanded="false"><span></span></button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div>
+        <span class="eyebrow on-dark">NỀN TẢNG SỐ NGÀNH XÂY DỰNG — SỬA CHỮA</span>
+        <h1>Đúng thợ, đúng giá,<br>đúng tiến độ — <em>từ bản vẽ đến nghiệm thu.</em></h1>
+        <p class="lead">Nhu cầu sửa chữa, cải tạo nhà cửa tại đô thị ngày càng lớn, nhưng tìm thợ uy tín và báo giá minh bạch vẫn là bài toán khó. Xây Dựng Kết Nối kết nối khách hàng với thợ lành nghề — nhanh chóng, rõ ràng, có giám sát.</p>
+        <div class="hero-ctas">
+          <a href="customer.html" class="btn btn-primary">Tôi là khách hàng</a>
+          <a href="worker.html" class="btn btn-outline-dark">Tôi là thợ xây dựng</a>
+        </div>
+      </div>
+
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 480 400" fill="none">
+          <!-- dimension line top -->
+          <line x1="60" y1="40" x2="420" y2="40" stroke="#6FA8DC" stroke-width="1"/>
+          <line x1="60" y1="34" x2="60" y2="46" stroke="#6FA8DC" stroke-width="1"/>
+          <line x1="420" y1="34" x2="420" y2="46" stroke="#6FA8DC" stroke-width="1"/>
+          <text x="240" y="30" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#B8D3ED">8400 MM</text>
+
+          <!-- house outline -->
+          <path d="M90 200 240 90 390 200" stroke="#B8D3ED" stroke-width="1.6" stroke-linejoin="round"/>
+          <rect x="110" y="200" width="260" height="150" stroke="#B8D3ED" stroke-width="1.6"/>
+          <!-- door -->
+          <rect x="220" y="280" width="40" height="70" stroke="#FF5A1F" stroke-width="1.6"/>
+          <!-- windows -->
+          <rect x="140" y="230" width="46" height="40" stroke="#6FA8DC" stroke-width="1.2"/>
+          <line x1="163" y1="230" x2="163" y2="270" stroke="#6FA8DC" stroke-width="1"/>
+          <line x1="140" y1="250" x2="186" y2="250" stroke="#6FA8DC" stroke-width="1"/>
+          <rect x="294" y="230" width="46" height="40" stroke="#6FA8DC" stroke-width="1.2"/>
+          <line x1="317" y1="230" x2="317" y2="270" stroke="#6FA8DC" stroke-width="1"/>
+          <line x1="294" y1="250" x2="340" y2="250" stroke="#6FA8DC" stroke-width="1"/>
+          <!-- roof ridge marker -->
+          <circle cx="240" cy="90" r="3" fill="#FF5A1F"/>
+
+          <!-- annotation callouts -->
+          <line x1="243" y1="90" x2="300" y2="70" stroke="#6FA8DC" stroke-width="0.75" stroke-dasharray="2 3"/>
+          <text x="303" y="73" font-family="IBM Plex Mono" font-size="9.5" fill="#9FB0C9">MÁI • SỬA CHỮA</text>
+
+          <line x1="186" y1="250" x2="120" y2="270" stroke="#6FA8DC" stroke-width="0.75" stroke-dasharray="2 3"/>
+          <text x="30" y="278" font-family="IBM Plex Mono" font-size="9.5" fill="#9FB0C9">CỬA SỔ</text>
+
+          <line x1="260" y1="310" x2="340" y2="320" stroke="#6FA8DC" stroke-width="0.75" stroke-dasharray="2 3"/>
+          <text x="343" y="323" font-family="IBM Plex Mono" font-size="9.5" fill="#9FB0C9">HOÀN THIỆN</text>
+
+          <!-- vertical dimension right -->
+          <line x1="405" y1="200" x2="405" y2="350" stroke="#6FA8DC" stroke-width="1"/>
+          <line x1="399" y1="200" x2="411" y2="200" stroke="#6FA8DC" stroke-width="1"/>
+          <line x1="399" y1="350" x2="411" y2="350" stroke="#6FA8DC" stroke-width="1"/>
+          <text x="414" y="278" font-family="IBM Plex Mono" font-size="9.5" fill="#9FB0C9" transform="rotate(90 414 278)">4200 MM</text>
+
+          <text x="110" y="380" font-family="IBM Plex Mono" font-size="9.5" fill="#5E6A80">HỒ SƠ SỐ 01 — SỬA CHỮA NHÀ Ở</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="stat-strip">
+        <div class="stat"><div class="num">45%</div><div class="label">TỶ LỆ ĐÔ THỊ HÓA MỤC TIÊU 2025</div></div>
+        <div class="stat"><div class="num">06</div><div class="label">BƯỚC TỪ YÊU CẦU ĐẾN NGHIỆM THU</div></div>
+        <div class="stat"><div class="num">2 TP</div><div class="label">ĐẦU TÀU: HÀ NỘI • TP.HCM</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="section-light" id="van-de">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow on-light">Vấn đề</span>
+        <h2>Thị trường thiếu một bản thiết kế chung</h2>
+        <p>Cả người cần sửa nhà lẫn người có tay nghề đều đang xoay sở với những kênh thiếu minh bạch — không ai có đủ thông tin để ra quyết định đúng.</p>
+      </div>
+
+      <div class="problem-grid reveal">
+        <div class="problem-card customer">
+          <div class="ic-row">
+            <span class="ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M3 11 12 4l9 7"/><path d="M5 10v9h14v-9"/><path d="M10 19v-6h4v6"/></svg>
+            </span>
+            <h3>Góc nhìn khách hàng</h3>
+          </div>
+          <ul>
+            <li>Khó tìm thợ uy tín, tay nghề cao, giá hợp lý</li>
+            <li>Phụ thuộc người quen, nhóm mạng xã hội, biển quảng cáo</li>
+            <li>Báo giá thiếu minh bạch, khó so sánh</li>
+            <li>Chất lượng thi công không được đảm bảo</li>
+            <li>Dễ phát sinh tranh chấp về chi phí, tiến độ</li>
+          </ul>
+        </div>
+        <div class="problem-card worker">
+          <div class="ic-row">
+            <span class="ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6"/><circle cx="12" cy="8" r="4"/><path d="M8 8a4 4 0 0 1 8 0"/></svg>
+            </span>
+            <h3>Góc nhìn thợ xây dựng</h3>
+          </div>
+          <ul>
+            <li>Có tay nghề nhưng ít cơ hội tiếp cận khách hàng trực tiếp</li>
+            <li>Phải qua trung gian hoặc chủ thầu để nhận việc</li>
+            <li>Thu nhập giảm sút do chia sẻ qua nhiều tầng</li>
+            <li>Thiếu kênh xây dựng hồ sơ, uy tín cá nhân</li>
+            <li>Không có nền tảng chuyên biệt dành riêng cho ngành</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SYSTEM ROLE SPLIT -->
+  <section class="section-tint">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow on-light">Hệ thống</span>
+        <h2>Hai luồng xử lý riêng biệt, nhưng cùng một nền tảng</h2>
+        <p>Trang web này không chỉ kết nối hai bên — nó tổ chức toàn bộ quy trình theo từng vai trò để mỗi người đều có trải nghiệm rõ ràng, tối ưu và đáng tin cậy.</p>
+      </div>
+
+      <div class="system-shell reveal">
+        <div class="role-panel customer">
+          <div class="role-header">
+            <span class="role-badge">Khách hàng</span>
+            <span class="eyebrow on-light">Mua / Sửa / Cải tạo</span>
+          </div>
+          <div class="role-body">
+            <h3>Đặt nhu cầu, chọn thợ, kiểm soát chi phí</h3>
+            <p>Khách hàng mô tả công việc, nhận báo giá minh bạch, theo dõi tiến độ và hoàn tất nghiệm thu với cơ chế rõ ràng, không mất thời gian lùng tìm người quen.</p>
+            <ul class="check-list">
+              <li>Đăng yêu cầu theo khu vực, hạng mục và ngân sách</li>
+              <li>Nhận nhiều báo giá từ thợ phù hợp cùng tiêu chí</li>
+              <li>Giám sát tiến độ từng ngày, từng hạng mục thi công</li>
+              <li>Thanh toán theo giai đoạn và đánh giá sau khi hoàn tất</li>
+            </ul>
+            <div class="mini-grid">
+              <div class="mini-card">
+                <div class="num">3 phút</div>
+                <div class="txt">Tạo yêu cầu</div>
+              </div>
+              <div class="mini-card">
+                <div class="num">24/7</div>
+                <div class="txt">Theo dõi tiến độ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="role-panel worker">
+          <div class="role-header">
+            <span class="role-badge">Thợ lành nghề</span>
+            <span class="eyebrow on-light">Nhận việc / Quản lý / Tăng uy tín</span>
+          </div>
+          <div class="role-body">
+            <h3>Tạo hồ sơ, nhận việc, nâng cấp uy tín nghề</h3>
+            <p>Thợ xây dựng trình bày chuyên môn, công trình đã làm, mức giá và khả năng làm việc. Hệ thống giúp họ tiếp cận khách hàng thật, quản lý dự án tốt hơn và phát triển kinh doanh bền vững.</p>
+            <ul class="check-list">
+              <li>Thiết lập hồ sơ chuyên môn, kỹ năng và công trình tiêu biểu</li>
+              <li>Tiếp cận khách hàng trong khu vực hoạt động của mình</li>
+              <li>Nhận hợp đồng, báo giá và cập nhật tiến độ trực tuyến</li>
+              <li>Xây dựng danh tiếng nghề nghiệp qua đánh giá thực tế</li>
+            </ul>
+            <div class="mini-grid">
+              <div class="mini-card">
+                <div class="num">1 hồ sơ</div>
+                <div class="txt">Bắt đầu nhận việc</div>
+              </div>
+              <div class="mini-card">
+                <div class="num">4.9/5</div>
+                <div class="txt">Uy tín nghề</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUTION / FEATURES -->
+  <section class="section-tint" id="giai-phap">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow on-light">Giải pháp</span>
+        <h2>Mọi công cụ nằm trong một nền tảng</h2>
+        <p>Từ lúc đăng yêu cầu đến khi nghiệm thu công trình — toàn bộ quy trình được số hóa, minh bạch và có giám sát.</p>
+      </div>
+
+      <div class="feature-grid reveal">
+        <div class="feature-card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="1"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></span>
+          <h3>Đăng yêu cầu</h3>
+          <p>Kèm hình ảnh, mô tả chi tiết, địa điểm và ngân sách dự kiến — chỉ mất vài phút.</p>
+        </div>
+        <div class="feature-card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><line x1="20" y1="20" x2="15.5" y2="15.5"/></svg></span>
+          <h3>Gợi ý thợ phù hợp</h3>
+          <p>Xếp hạng theo vị trí, chuyên môn, đánh giá thực tế và mức báo giá.</p>
+        </div>
+        <div class="feature-card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10.5" r="1.8"/><line x1="13" y1="9" x2="18" y2="9"/><line x1="13" y1="13" x2="18" y2="13"/></svg></span>
+          <h3>Hồ sơ chuyên nghiệp</h3>
+          <p>Kinh nghiệm, ảnh công trình đã làm, chứng chỉ nghề và giá tham khảo.</p>
+        </div>
+        <div class="feature-card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4V5Z"/></svg></span>
+          <h3>Chat & báo giá</h3>
+          <p>Trao đổi trực tuyến, chốt báo giá minh bạch ngay trong hội thoại.</p>
+        </div>
+        <div class="feature-card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><path d="m9 14 2 2 4-4"/></svg></span>
+          <h3>Lịch hẹn & thanh toán</h3>
+          <p>Đặt lịch thi công và thanh toán an toàn ngay trên nền tảng.</p>
+        </div>
+        <div class="feature-card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 14.5 9l6 .8-4.4 4.1 1.1 6-5.2-2.8-5.2 2.8 1.1-6L3.5 9.8l6-.8Z"/></svg></span>
+          <h3>Đánh giá hai chiều</h3>
+          <p>Xây dựng uy tín minh bạch cho cả khách hàng và thợ sau mỗi công trình.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="section-light" id="quy-trinh">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow on-light">Quy trình</span>
+        <h2>Sáu bước, từ yêu cầu đến nghiệm thu</h2>
+        <p>Mỗi bước đều được ghi nhận và giám sát, có cơ chế giải quyết tranh chấp nếu phát sinh vấn đề.</p>
+      </div>
+
+      <div class="process-track reveal">
+        <div class="process-step">
+          <div class="tick">01</div>
+          <h3>Đăng yêu cầu</h3>
+          <p>Mô tả công việc, ảnh hiện trạng, ngân sách.</p>
+        </div>
+        <div class="process-step">
+          <div class="tick">02</div>
+          <h3>Gợi ý thợ</h3>
+          <p>Hệ thống xếp hạng thợ phù hợp nhất.</p>
+        </div>
+        <div class="process-step">
+          <div class="tick">03</div>
+          <h3>Báo giá</h3>
+          <p>Nhận và so sánh báo giá minh bạch.</p>
+        </div>
+        <div class="process-step">
+          <div class="tick">04</div>
+          <h3>Ký kết</h3>
+          <p>Xác nhận phạm vi công việc, lịch hẹn.</p>
+        </div>
+        <div class="process-step">
+          <div class="tick">05</div>
+          <h3>Thi công</h3>
+          <p>Theo dõi tiến độ, trao đổi trực tiếp.</p>
+        </div>
+        <div class="process-step">
+          <div class="tick">06</div>
+          <h3>Đánh giá</h3>
+          <p>Nghiệm thu và đánh giá hai chiều.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIFFERENTIATORS -->
+  <section class="section-tint">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow on-light">Khác biệt</span>
+        <h2>Không phải rao vặt — đây là hồ sơ kỹ thuật ngành xây dựng</h2>
+        <p>So với Chợ Tốt, Facebook hay các app dịch vụ gia đình thông thường.</p>
+      </div>
+
+      <div class="diff-list reveal">
+        <div class="diff-row">
+          <div class="diff-label">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2 21 8.5l-3 3-6.5-6.5Z"/><path d="M13 5 5 13l-2 6 6-2 8-8"/></svg></span>
+            Chuyên sâu ngành xây dựng
+          </div>
+          <p>Không chỉ sửa chữa nhỏ — hỗ trợ cả cải tạo, hoàn thiện nội thất, sửa mái, trần, tường, điện nước với tiêu chí kỹ thuật riêng cho từng hạng mục.</p>
+        </div>
+        <div class="diff-row">
+          <div class="diff-label">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg></span>
+            Báo giá chuẩn theo khu vực
+          </div>
+          <p>Mức giá tham khảo dựa trên dữ liệu thực tế theo khu vực và hạng mục, giúp khách hàng có cơ sở trước khi chọn thợ.</p>
+        </div>
+        <div class="diff-row">
+          <div class="diff-label">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            Giám sát & giải quyết tranh chấp
+          </div>
+          <p>Quy trình phản hồi chặt chẽ với cơ chế xử lý tranh chấp rõ ràng, tạo niềm tin cho cả hai phía.</p>
+        </div>
+        <div class="diff-row">
+          <div class="diff-label">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="9" y1="15" x2="14" y2="15"/></svg></span>
+            Quản lý dự án cho thợ
+          </div>
+          <p>Hỗ trợ lịch thi công, vật tư và nhân công — nâng tính chuyên nghiệp cho từng đội thợ nhỏ.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPACT -->
+  <section class="section-dark" id="hieu-qua">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow on-dark">Hiệu quả</span>
+        <h2>Tác động đến kinh tế, xã hội và môi trường</h2>
+        <p>Một nền tảng minh bạch không chỉ giải quyết bài toán tìm thợ — nó thay đổi cả cách thị trường vận hành.</p>
+      </div>
+
+      <div class="impact-grid reveal">
+        <div class="impact-card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 9 11 13 15 21 7"/><path d="M15 7h6v6"/></svg></span>
+          <h3>Kinh tế</h3>
+          <ul>
+            <li>Tối ưu chi phí nhờ so sánh giá minh bạch</li>
+            <li>Giảm chi phí trung gian</li>
+            <li>Tăng thu nhập trực tiếp cho thợ</li>
+            <li>Thị trường dịch vụ phát triển minh bạch hơn</li>
+          </ul>
+        </div>
+        <div class="impact-card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6"/><circle cx="12" cy="8" r="4"/></svg></span>
+          <h3>Xã hội</h3>
+          <ul>
+            <li>Tạo việc làm, thúc đẩy đào tạo kỹ năng nghề</li>
+            <li>Giảm thời gian, công sức tìm kiếm</li>
+            <li>Nâng cao chất lượng cuộc sống người dân</li>
+            <li>Môi trường làm việc chuyên nghiệp, giảm tranh chấp</li>
+          </ul>
+        </div>
+        <div class="impact-card">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-1-8-5-8-11 5 0 9 2 11 5 2-4 6-6 9-6-1 7-6 11-9 12-1-3-1-6 0-9"/></svg></span>
+          <h3>Môi trường</h3>
+          <ul>
+            <li>Gợi ý vật liệu, phương án thi công thân thiện</li>
+            <li>Giảm lãng phí vật tư nhờ thi công chính xác hơn</li>
+            <li>Khuyến khích sửa chữa thay vì phá bỏ</li>
+            <li>Góp phần giảm rác thải xây dựng</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="cta-final grid-bg" id="dang-yeu-cau">
+    <div class="wrap">
+      <span class="eyebrow on-dark">Bắt đầu ngay</span>
+      <h2>Sẵn sàng cho công trình tiếp theo của bạn?</h2>
+      <p>Đăng yêu cầu miễn phí trong vài phút, hoặc tạo hồ sơ thợ để bắt đầu nhận việc ngay hôm nay.</p>
+      <div class="hero-ctas">
+        <a href="register.html" class="btn btn-primary">Đăng ký tài khoản</a>
+        <a href="worker.html" class="btn btn-outline-dark">Tạo hồ sơ thợ</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer id="dang-ky-tho">
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a href="#top" class="logo">
+          <span class="mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v9h14v-9"/><path d="M10 19v-6h4v6"/></svg>
+          </span>
+          XÂY DỰNG KẾT NỐI
+        </a>
+        <p>Nền tảng kết nối khách hàng có nhu cầu sửa chữa, xây dựng với đội ngũ thợ lành nghề — minh bạch, nhanh chóng, có giám sát.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h4>Sản phẩm</h4>
+          <a href="#van-de">Vấn đề</a>
+          <a href="#giai-phap">Giải pháp</a>
+          <a href="#quy-trinh">Quy trình</a>
+          <a href="#hieu-qua">Hiệu quả</a>
+        </div>
+        <div class="foot-col">
+          <h4>Tham gia</h4>
+          <a href="register.html">Đăng ký</a>
+          <a href="customer.html">Đăng yêu cầu</a>
+          <a href="worker.html">Tạo hồ sơ thợ</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 XÂY DỰNG KẾT NỐI</span>
+      <span>CUỘC THI SÁNG TẠO TRẺ VNUF 2026 — TRƯỜNG ĐẠI HỌC LÂM NGHIỆP</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile nav toggle
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', isOpen);
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }));
+
+  // Reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+</script>
+
+</body>
+</html>

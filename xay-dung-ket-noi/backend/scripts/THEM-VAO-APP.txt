@@ -1,0 +1,5 @@
+Thêm vào src/app.js (cạnh dòng khu-vuc, TRƯỚC middleware xử lý lỗi):
+
+app.use('/api/chuyen-mon', require('./modules/chuyen-mon/chuyen-mon.routes'));
+app.use('/api/yeu-cau',    require('./modules/yeu-cau/yeu-cau.routes'));
+app.use('/api/tho',        require('./modules/tho/tho.routes'));

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập | Xây Dựng Kết Nối</title>
+  <style>
+    :root {
+      --navy: #10233F;
+      --navy-deep: #0A1830;
+      --orange: #FF5A1F;
+      --orange-dark: #D8460E;
+      --paper: #F4F1EA;
+      --white: #ffffff;
+      --ink: #1B1F2A;
+      --muted: #677181;
+      --line: rgba(16, 35, 63, 0.12);
+      --blue: #6FA8DC;
+      --light-blue: #EAF4FF;
+      --shadow: 0 18px 35px rgba(16, 35, 63, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #f9fafb 0%, #eef5ff 100%);
+      color: var(--ink);
+    }
+    a { text-decoration: none; color: inherit; }
+
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+
+    header {
+      background: rgba(255, 255, 255, 0.96);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(8px);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+    }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: var(--navy);
+      color: var(--white);
+      font-weight: 700;
+    }
+    .nav-links {
+      display: flex;
+      gap: 22px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .nav-links a:hover { color: var(--navy); }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 22px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .btn-primary { background: var(--orange); color: #fff; }
+    .btn-primary:hover { background: var(--orange-dark); }
+    .btn-secondary { background: #fff; border: 1px solid var(--line); color: var(--navy); }
+
+    .page {
+      min-height: calc(100vh - 72px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 46px 0;
+    }
+    .login-box {
+      width: min(900px, 100%);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .login-grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+    }
+    .left-panel {
+      background: linear-gradient(180deg, var(--navy) 0%, #173a62 100%);
+      color: #fff;
+      padding: 34px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .left-panel h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.15;
+      margin: 0 0 16px;
+    }
+    .left-panel p {
+      color: #dfe7f6;
+      line-height: 1.7;
+      font-size: 15px;
+      margin: 0 0 28px;
+    }
+    .feature-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .feature-list li {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: #eaf1ff;
+      font-size: 14px;
+    }
+    .feature-list li::before {
+      content: "✓";
+      color: #9cd3ff;
+      margin-right: 8px;
+      font-weight: 700;
+    }
+
+    .right-panel {
+      padding: 34px 28px;
+    }
+    .top-label {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--light-blue);
+      border: 1px solid rgba(111, 168, 220, 0.2);
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .right-panel h2 {
+      font-size: clamp(24px, 2.8vw, 32px);
+      margin: 16px 0 8px;
+    }
+    .subtitle {
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 22px;
+      font-size: 14px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .field.full {
+      grid-column: 1 / -1;
+    }
+    label {
+      font-weight: 700;
+      color: var(--navy);
+      font-size: 14px;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font: inherit;
+      color: var(--ink);
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(111, 168, 220, 0.12);
+    }
+
+    .remember-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    .remember-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    .remember-row label {
+      color: var(--muted);
+      margin: 0;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .forgot-link {
+      color: var(--blue);
+      font-weight: 600;
+    }
+    .forgot-link:hover {
+      color: var(--navy);
+    }
+
+    .submit-btn {
+      margin-top: 18px;
+      width: 100%;
+    }
+    .form-message {
+      min-height: 22px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .form-message.error { color: #b42318; }
+
+    .signup-text {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .signup-text a {
+      color: var(--blue);
+      font-weight: 700;
+    }
+    .signup-text a:hover {
+      color: var(--navy);
+    }
+
+    footer {
+      background: var(--navy-deep);
+      color: #b7c1d6;
+      padding: 34px 0;
+    }
+    .foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    @media (max-width: 880px) {
+      .login-grid {
+        grid-template-columns: 1fr;
+      }
+      .left-panel {
+        order: 2;
+      }
+      .right-panel {
+        order: 1;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a href="index.html" class="brand">
+        <div class="brand-mark">H</div>
+        <span>Xây Dựng Kết Nối</span>
+      </a>
+      <nav class="nav-links">
+        <a href="index.html">Trang chủ</a>
+        <a href="customer.html">Khách hàng</a>
+        <a href="worker.html">Thợ lành nghề</a>
+        <a href="worker-profile.html">Xem hồ sơ</a>
+        <a href="my-reviews.html">Đánh giá</a>
+      </nav>
+      <a href="index.html" class="btn btn-secondary">Về trang chủ</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="wrap">
+      <div class="login-box">
+        <div class="login-grid">
+          <aside class="left-panel">
+            <div>
+              <h1>Chào mừng bạn!</h1>
+              <p>Đăng nhập để quản lý hồ sơ, nhận yêu cầu, hoặc đặt nhu cầu sửa chữa với những thợ lành nghề uy tín.</p>
+              <ul class="feature-list">
+                <li>Quản lý hồ sơ chuyên nghiệp</li>
+                <li>Nhận công việc phù hợp</li>
+                <li>Đặt nhu cầu sửa chữa an toàn</li>
+                <li>Giám sát tiến độ 24/7</li>
+              </ul>
+            </div>
+          </aside>
+
+          <section class="right-panel">
+            <div class="top-label">Đăng nhập</div>
+            <h2>Truy cập tài khoản</h2>
+            <p class="subtitle">Nhập thông tin để tiếp tục với tài khoản của bạn.</p>
+
+            <form id="loginForm">
+              <div class="form-grid">
+                <div class="field full">
+                  <label for="identifier">Email hoặc số điện thoại</label>
+                  <input id="identifier" name="identifier" type="text" placeholder="example@gmail.com hoặc 09xx xxx xxx" autocomplete="username" required />
+                </div>
+                <div class="field full">
+                  <label for="password">Mật khẩu</label>
+                  <input id="password" name="password" type="password" placeholder="Nhập mật khẩu" autocomplete="current-password" required />
+                </div>
+              </div>
+
+              <div class="remember-row">
+                <label>
+                  <input id="rememberAccount" type="checkbox" checked />
+                  Ghi nhớ tài khoản này
+                </label>
+                <a href="#" class="forgot-link">Quên mật khẩu?</a>
+              </div>
+
+              <button type="submit" class="btn btn-primary submit-btn">Đăng nhập</button>
+              <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
+            </form>
+
+            <div class="signup-text">
+              Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <div><strong style="color: #fff; display: block; margin-bottom: 6px;">Xây Dựng Kết Nối</strong><span>Hệ thống kết nối khách hàng và thợ lành nghề</span></div>
+      <div>© 2026 | Đăng nhập tài khoản</div>
+    </div>
+  </footer>
+  <script src="js/api.js"></script>
+  <script>
+    if (API.getToken() && API.getUser()) {
+      window.location.href = API.getUser().role === 'worker' ? 'skilled-worker.html' : 'customer.html';
+    }
+    const loginForm = document.getElementById('loginForm');
+    const loginMessage = document.getElementById('formMessage');
+    const loginButton = loginForm.querySelector('[type="submit"]');
+
+    loginForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      loginButton.disabled = true;
+      loginMessage.textContent = 'Đang đăng nhập...';
+      loginMessage.className = 'form-message';
+      try {
+        const result = await API.post('/auth/login', {
+          identifier: document.getElementById('identifier').value,
+          password: document.getElementById('password').value
+        });
+        const remember = document.getElementById('rememberAccount').checked;
+        API.saveToken(result.token, remember);
+        API.saveUser(result.user, remember);
+        window.location.href = result.user.role === 'worker' ? 'skilled-worker.html' : 'customer.html';
+      } catch (error) {
+        loginMessage.textContent = error.message;
+        loginMessage.className = 'form-message error';
+      } finally {
+        loginButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
