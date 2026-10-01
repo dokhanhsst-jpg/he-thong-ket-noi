@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hồ sơ thợ | Xây Dựng Kết Nối</title>
+  <style>
+    :root {
+      --navy: #10233F;
+      --navy-deep: #0A1830;
+      --orange: #FF5A1F;
+      --orange-dark: #D8460E;
+      --paper: #F4F1EA;
+      --white: #ffffff;
+      --ink: #191E28;
+      --muted: #667283;
+      --line: rgba(16, 35, 63, 0.12);
+      --blue: #6FA8DC;
+      --blue-soft: #EAF4FF;
+      --green: #2D8A5E;
+      --shadow: 0 18px 40px rgba(16, 35, 63, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #f9fafd 0%, #f0f5f9 100%);
+      color: var(--ink);
+    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    button, input, select { font: inherit; }
+    .wrap { max-width: 1220px; margin: 0 auto; padding: 0 20px; }
+
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(10px);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 76px;
+      gap: 18px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--navy);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .nav-links a:hover { color: var(--navy); }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--orange); color: #fff; }
+    .btn-primary:hover { background: var(--orange-dark); }
+    .btn-secondary { background: #fff; border-color: var(--line); color: var(--navy); }
+    .btn-contact { background: var(--green); color: #fff; }
+    .btn-contact:hover { background: #1f6447; }
+
+    .page { padding: 28px 0 60px; }
+
+    .profile-header {
+      background: linear-gradient(135deg, var(--navy) 0%, #173f68 100%);
+      border-radius: 28px;
+      color: #fff;
+      padding: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(111,168,220,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(111,168,220,0.14) 1px, transparent 1px);
+      background-size: 26px 26px;
+      opacity: 0.5;
+    }
+    .profile-content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: center;
+    }
+    .profile-info h1 {
+      margin: 0 0 12px;
+      font-size: clamp(30px, 3vw, 46px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+    .profile-info h2 {
+      margin: 0 0 18px;
+      font-size: clamp(16px, 2vw, 22px);
+      font-weight: 500;
+      color: #a7d4ff;
+    }
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 20px 0 0;
+    }
+    .stat-item {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 12px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .stat-value {
+      display: block;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .stat-label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #d6e5fc;
+      margin-top: 6px;
+    }
+
+    .profile-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 22px;
+      padding: 22px;
+      backdrop-filter: blur(6px);
+    }
+    .profile-card-item {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      color: #ebf3ff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .profile-card-item::before {
+      content: "✓";
+      color: #9ed3ff;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .main { padding: 40px 0; }
+    .section { margin-bottom: 52px; }
+    .section-head { margin-bottom: 26px; }
+    .section h2 {
+      font-size: clamp(26px, 3vw, 38px);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin: 0 0 12px;
+    }
+    .section-desc {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 600px;
+      margin: 0;
+    }
+    .section-eyebrow {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      border: 1px solid rgba(111,168,220,0.2);
+      color: var(--navy);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .bio-box {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .bio-box h3 {
+      margin: 0 0 16px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .bio-box p {
+      margin: 0;
+      line-height: 1.8;
+      color: var(--ink);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .info-item {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .info-item-label {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .info-item-value {
+      display: block;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .reviews-section {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+    .review-card {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+    }
+    .review-card:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+    .review-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .reviewer-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .reviewer-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--blue-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .reviewer-name {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .reviewer-role {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .review-rating {
+      display: flex;
+      gap: 2px;
+    }
+    .star {
+      color: var(--orange);
+      font-size: 16px;
+    }
+    .review-text {
+      color: var(--ink);
+      line-height: 1.7;
+      margin: 12px 0 0;
+    }
+    .review-meta {
+      display: flex;
+      gap: 14px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .contact-box {
+      background: linear-gradient(135deg, var(--blue-soft) 0%, #e0ecff 100%);
+      border: 1px solid rgba(111,168,220,0.3);
+      border-radius: 22px;
+      padding: 26px;
+      text-align: center;
+      margin-top: 28px;
+    }
+    .contact-box h3 {
+      margin: 0 0 12px;
+      color: var(--navy);
+      font-size: 20px;
+    }
+    .contact-box p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .contact-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .directory-shell {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+      margin-top: 20px;
+    }
+    .worker-list-panel,
+    .worker-detail-panel {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .worker-list-panel {
+      padding: 20px;
+    }
+    .panel-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--navy);
+      margin: 0 0 18px;
+    }
+    .worker-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .worker-item {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .worker-item:hover,
+    .worker-item.active {
+      border-color: var(--orange);
+      background: #fffaf7;
+      box-shadow: 0 12px 28px rgba(255, 90, 31, 0.08);
+    }
+    .worker-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue-soft) 0%, #e0ecff 100%);
+      color: var(--navy);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .worker-meta {
+      flex: 1;
+      min-width: 0;
+    }
+    .worker-name {
+      display: block;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .worker-role {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .worker-mini {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--navy);
+    }
+    .worker-mini span {
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #f4f8ff;
+      border: 1px solid rgba(111,168,220,0.18);
+      font-weight: 700;
+    }
+
+    .worker-detail-panel {
+      padding: 20px;
+    }
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 18px;
+      margin-bottom: 18px;
+    }
+    .detail-identity {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .detail-identity .worker-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      font-size: 22px;
+    }
+    .detail-name {
+      display: block;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .detail-role {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .detail-rating {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fffaf7;
+      border: 1px solid rgba(255, 90, 31, 0.18);
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: var(--navy);
+      font-weight: 700;
+    }
+    .detail-rating .star {
+      color: var(--orange);
+      font-size: 18px;
+    }
+
+    .detail-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0 24px;
+    }
+    .detail-meta {
+      background: #f8fbff;
+      border: 1px solid rgba(111,168,220,0.18);
+      border-radius: 14px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .detail-meta strong {
+      display: block;
+      font-size: 22px;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .detail-meta span {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .detail-content {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+    }
+    .detail-box {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+    }
+    .detail-box h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      color: var(--navy);
+    }
+    .detail-box p {
+      margin: 0;
+      color: var(--ink);
+      line-height: 1.8;
+    }
+    .detail-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .detail-list span {
+      display: block;
+      padding: 10px 12px;
+      background: #f8fbff;
+      border: 1px solid rgba(111,168,220,0.18);
+      border-radius: 10px;
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 22px;
+    }
+    .review-item {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .review-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .review-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .review-user .worker-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+    .review-user strong {
+      display: block;
+      color: var(--navy);
+      font-size: 14px;
+    }
+    .review-user span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .review-text {
+      margin: 0;
+      line-height: 1.8;
+      color: var(--ink);
+    }
+    .review-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+
+    footer {
+      background: var(--navy-deep);
+      color: #b7c3d9;
+      padding: 32px 0;
+      margin-top: 52px;
+    }
+    .foot {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    @media (max-width: 980px) {
+      .profile-content { grid-template-columns: 1fr; }
+      .info-grid { grid-template-columns: 1fr; }
+      .profile-stats { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 720px) {
+      .nav-links { display: none; }
+      .profile-stats { grid-template-columns: 1fr; }
+      .contact-buttons { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">H</span>
+        <span>Xây Dựng Kết Nối</span>
+      </a>
+      <nav class="nav-links">
+        <a href="index.html">Trang chủ</a>
+        <a href="customer.html">Khách hàng</a>
+        <a href="skilled-worker.html">Thợ lành nghề</a>
+        <a href="#danh-gia">Đánh giá</a>
+      </nav>
+      <div class="nav-actions" id="navActions">
+        <a href="dangnhap.html" class="btn btn-secondary">Đăng nhập</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page wrap">
+    <section class="directory-shell">
+      <aside class="worker-list-panel">
+        <h2 class="panel-title">Danh sách thợ</h2>
+        <div id="workerList" class="worker-list"></div>
+      </aside>
+
+      <div class="worker-detail-panel">
+        <div id="workerDetail"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <div><strong style="color:#fff;display:block;margin-bottom:6px;">Xây Dựng Kết Nối</strong><span>Nền tảng kết nối thợ lành nghề với khách hàng — chuyên nghiệp, uy tín, hiệu quả</span></div>
+      <div>© 2026 | Chọn thợ để xem hồ sơ</div>
+    </div>
+  </footer>
+
+  <script>
+    const workers = [
+      {
+        name: 'Phùng Đức Anh',
+        role: 'Thợ sửa nhà chuyên nghiệp',
+        area: 'Hà Nội',
+        years: '8 năm',
+        projects: '142',
+        rating: '4.9/5',
+        response: '98%',
+        intro: 'Với 8 năm kinh nghiệm trong ngành sửa chữa nhà ở, tôi chuyên thực hiện cải tạo trần, tường, sàn, cửa, cửa sổ và các công trình nội thất nhỏ. Mỗi dự án đều được tôi làm cẩn thận, đúng tiến độ và giữ vệ sinh làm việc sạch sẽ.',
+        expertise: ['Sửa chữa trần - tường', 'Sơn sửa nhà', 'Cải tạo nội thất', 'Sửa điện - nước cơ bản'],
+        phone: '0987 654 321',
+        price: '250.000 – 350.000 đ/ngày',
+        schedule: 'Toàn thời gian (7h – 17h)',
+        serviceArea: 'Hoàn Kiếm, Hai Bà Trưng, Đống Đa, Cầu Giấy',
+        reviews: [
+          { name: 'Nguyễn Kim', city: 'Hoàn Kiếm', stars: 5, text: 'Thợ Anh rất chuyên nghiệp, làm việc nhanh, sạch sẽ và đúng tiến độ. Tôi rất hài lòng với kết quả sơn và sửa tường phòng khách.', date: '15 tháng 1, 2026' },
+          { name: 'Trần Hải', city: 'Hai Bà Trưng', stars: 5, text: 'Phản hồi nhanh, báo giá rõ ràng, không phát sinh chi phí bất ngờ. Kết quả cải tạo bếp và phòng tắm rất đẹp.', date: '8 tháng 1, 2026' },
+          { name: 'Lê Hương', city: 'Thanh Xuân', stars: 4, text: 'Công việc tốt, thợ nhiệt tình. Chỉ có 1-2 ngày chậm so với cam kết, nhưng chất lượng vẫn rất đáng tin cậy.', date: '22 tháng 12, 2025' },
+          { name: 'Bùi Dương', city: 'Cầu Giấy', stars: 5, text: 'Rất đáng thuê, tinh thần làm việc chuyên nghiệp, luôn giải thích rõ ràng trước khi làm. Mình sẽ dùng lại.', date: '10 tháng 12, 2025' }
+        ]
+      },
+      {
+        name: 'Nguyễn Tấn Hưng',
+        role: 'Thợ sơn nhà & cải tạo',
+        area: 'Đà Nẵng',
+        years: '6 năm',
+        projects: '96',
+        rating: '4.8/5',
+        response: '94%',
+        intro: 'Tôi chuyên làm sơn lại, cải tạo nội thất, tường và trần. Công việc của tôi tập trung vào thẩm mỹ, độ bền và sự sạch sẽ trong quá trình thi công.',
+        expertise: ['Sơn nhà', 'Cải tạo tường', 'Trần thạch cao', 'Trang trí nội thất'],
+        phone: '0912 456 789',
+        price: '220.000 – 320.000 đ/ngày',
+        schedule: 'Bán thời gian / Theo dự án',
+        serviceArea: 'Hải Châu, Ngũ Hành Sơn, Thanh Khê',
+        reviews: [
+          { name: 'Phạm Như', city: 'Hải Châu', stars: 5, text: 'Màu sơn đẹp, thợ xử lý tường rất kỹ. Giá hợp lý và làm việc đúng tiến độ.', date: '3 tháng 2, 2026' },
+          { name: 'Lý Minh', city: 'Ngũ Hành Sơn', stars: 5, text: 'Tôi rất hài lòng vì thợ có thị giác thẩm mỹ tốt và tư vấn hợp lý. Sẽ giới thiệu cho người thân.', date: '18 tháng 1, 2026' },
+          { name: 'Hồ Văn', city: 'Thanh Khê', stars: 4, text: 'Thợ làm việc cẩn thận, không làm hỏng đồ nội thất. Chỉ cần thêm thời gian cho một phần tường nhỏ.', date: '4 tháng 1, 2026' }
+        ]
+      },
+      {
+        name: 'Trần Quốc Huy',
+        role: 'Thợ xây dựng & sửa chữa',
+        area: 'TP.HCM',
+        years: '10 năm',
+        projects: '210',
+        rating: '5.0/5',
+        response: '99%',
+        intro: 'Tôi làm nghề xây dựng nhỏ, sửa chữa nhà, kho, quán ăn và gia đình. Tôi đánh giá cao tính chính xác, độ bền và tính minh bạch khi làm việc với khách hàng.',
+        expertise: ['Sửa nhà', 'Xây dựng nhỏ', 'Ống nước', 'Cửa sắt và nội thất'],
+        phone: '0903 333 222',
+        price: '300.000 – 400.000 đ/ngày',
+        schedule: 'Toàn thời gian',
+        serviceArea: 'Quận 7, Bình Thạnh, Gò Vấp, Phú Nhuận',
+        reviews: [
+          { name: 'Mai Linh', city: 'Bình Thạnh', stars: 5, text: 'Một trong những thợ tốt nhất mình từng thuê. Không phát sinh chi phí, làm việc rất sạch và đúng cam kết.', date: '27 tháng 1, 2026' },
+          { name: 'Đặng Vũ', city: 'Quận 7', stars: 5, text: 'Kỹ năng rất tốt, đặc biệt là sửa nhà, ống nước và gỗ. Mình rất tin tưởng và đã đặt lịch với thợ lần hai.', date: '12 tháng 1, 2026' },
+          { name: 'Nguyễn Hà', city: 'Phú Nhuận', stars: 5, text: 'Thợ không chỉ làm đúng kỹ thuật mà còn nói rõ tiến độ và gì cần thực hiện. Rất chuyên nghiệp.', date: '21 tháng 12, 2025' }
+        ]
+      }
+    ];
+
+    let selectedIndex = 0;
+    const workerList = document.getElementById('workerList');
+    const workerDetail = document.getElementById('workerDetail');
+
+    function renderStars(rating) {
+      const full = Math.round(rating);
+      return Array.from({ length: 5 }).map((_, index) => `<span class="star">${index < full ? '★' : '☆'}</span>`).join('');
+    }
+
+    function renderList() {
+      workerList.innerHTML = workers.map((worker, index) => `
+        <button class="worker-item ${index === selectedIndex ? 'active' : ''}" data-index="${index}">
+          <div class="worker-avatar">${worker.name.split(' ').slice(-1)[0].slice(0, 2).toUpperCase()}</div>
+          <div class="worker-meta">
+            <span class="worker-name">${worker.name}</span>
+            <span class="worker-role">${worker.role}</span>
+            <div class="worker-mini">
+              <span>${worker.rating}</span>
+              <span>${worker.projects} dự án</span>
+            </div>
+          </div>
+        </button>
+      `).join('');
+
+      workerList.querySelectorAll('.worker-item').forEach((button) => {
+        button.addEventListener('click', () => {
+          selectedIndex = Number(button.dataset.index);
+          render();
+        });
+      });
+    }
+
+    function renderDetail() {
+      const worker = workers[selectedIndex];
+      const reviewCount = worker.reviews.length;
+      const totalStars = worker.reviews.reduce((sum, review) => sum + review.stars, 0);
+      const avgStars = (totalStars / reviewCount).toFixed(1);
+
+      workerDetail.innerHTML = `
+        <div class="detail-header">
+          <div class="detail-identity">
+            <div class="worker-avatar">${worker.name.split(' ').slice(-1)[0].slice(0, 2).toUpperCase()}</div>
+            <div>
+              <span class="detail-name">${worker.name}</span>
+              <span class="detail-role">${worker.role}</span>
+            </div>
+          </div>
+          <div class="detail-rating">
+            <span class="star">★</span>
+            <span>${avgStars}/5</span>
+          </div>
+        </div>
+
+        <div class="detail-meta-grid">
+          <div class="detail-meta">
+            <strong>${worker.years}</strong>
+            <span>Kinh nghiệm</span>
+          </div>
+          <div class="detail-meta">
+            <strong>${worker.projects}</strong>
+            <span>Dự án</span>
+          </div>
+          <div class="detail-meta">
+            <strong>${worker.rating}</strong>
+            <span>Đánh giá</span>
+          </div>
+          <div class="detail-meta">
+            <strong>${worker.response}</strong>
+            <span>Phản hồi</span>
+          </div>
+        </div>
+
+        <div class="detail-content">
+          <div class="detail-box">
+            <h3>Giới thiệu</h3>
+            <p>${worker.intro}</p>
+            <div class="detail-list">
+              ${worker.expertise.map(item => `<span>${item}</span>`).join('')}
+            </div>
+          </div>
+
+          <div class="detail-box">
+            <h3>Thông tin phục vụ</h3>
+            <div class="detail-list">
+              <span>📍 Khu vực: ${worker.serviceArea}</span>
+              <span>📞 Liên hệ: ${worker.phone}</span>
+              <span>💰 Giá: ${worker.price}</span>
+              <span>⏰ Thời gian: ${worker.schedule}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section" style="margin-top: 24px; margin-bottom: 0;">
+          <div class="section-head" style="margin-bottom: 18px;">
+            <span class="section-eyebrow">Đánh giá</span>
+            <h2>${reviewCount} bài đánh giá</h2>
+            <p class="section-desc">Những nhận xét từ khách hàng đã từng làm việc với ${worker.name}.</p>
+          </div>
+
+          <div class="review-list">
+            ${worker.reviews.map(review => `
+              <div class="review-item">
+                <div class="review-top">
+                  <div class="review-user">
+                    <div class="worker-avatar">${review.name.split(' ').slice(-1)[0].slice(0, 2).toUpperCase()}</div>
+                    <div>
+                      <strong>${review.name}</strong>
+                      <span>${review.city}</span>
+                    </div>
+                  </div>
+                  <div class="review-rating">${renderStars(review.stars)}</div>
+                </div>
+                <p class="review-text">${review.text}</p>
+                <div class="review-meta">
+                  <span>👍 Hữu ích</span>
+                  <span>📅 ${review.date}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function render() {
+      renderList();
+      renderDetail();
+    }
+
+    render();
+  </script>
+  <script src="js/api.js"></script>
+  <script>API.initNav(null);</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Trò chuyện | Xây Dựng Kết Nối</title>
+	<style>
+		:root { --ink:#172536; --muted:#667283; --line:#dce3e8; --paper:#f4f7f7; --white:#fff; --teal:#147d78; --orange:#e65c2f; --danger:#b42318; }
+		* { box-sizing:border-box; }
+		body { margin:0; color:var(--ink); background:var(--paper); font:16px/1.5 "Segoe UI",sans-serif; }
+		a { color:inherit; text-decoration:none; }
+		header { background:var(--white); border-bottom:1px solid var(--line); }
+		.bar { max-width:1180px; margin:auto; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; gap:16px; }
+		.brand { font-weight:800; }
+		.links { display:flex; gap:18px; color:var(--muted); font-weight:600; }
+		main { max-width:1180px; margin:28px auto; padding:0 20px; }
+		h1 { margin:0 0 18px; font-size:28px; }
+		.layout { display:grid; grid-template-columns:minmax(250px,330px) minmax(0,1fr); min-height:68vh; background:var(--white); border:1px solid var(--line); }
+		.conversations { border-right:1px solid var(--line); padding:16px; }
+		.conversation { display:block; padding:14px 10px; border-bottom:1px solid var(--line); }
+		.conversation:hover,.conversation.active { background:#edf6f4; }
+		.conversation small,.muted { color:var(--muted); }
+		.chat { display:flex; flex-direction:column; min-height:68vh; }
+		.chat-head { padding:16px 20px; border-bottom:1px solid var(--line); }
+		.messages { flex:1; padding:20px; display:flex; flex-direction:column; gap:12px; overflow:auto; max-height:58vh; }
+		.message { max-width:min(78%,620px); padding:10px 14px; border:1px solid var(--line); background:#f5f7f7; white-space:pre-wrap; overflow-wrap:anywhere; }
+		.message.mine { margin-left:auto; color:#fff; border-color:var(--teal); background:var(--teal); }
+		.message.system { align-self:center; max-width:92%; background:#fff8e8; border-color:#f3dfad; }
+		.message time { display:block; margin-top:4px; font-size:12px; opacity:.75; }
+		.decide { padding:14px 20px; border-top:1px solid var(--line); background:#f8faf9; }
+		.controls { display:flex; gap:10px; flex-wrap:wrap; align-items:end; }
+		label { display:block; margin-bottom:5px; font-weight:700; }
+		input,textarea,button { font:inherit; }
+		input,textarea { width:100%; padding:11px 12px; border:1px solid #b8c4ca; background:#fff; }
+		textarea { min-height:48px; resize:vertical; }
+		.field { flex:1; min-width:190px; }
+		button,.button { display:inline-flex; border:0; padding:11px 16px; color:#fff; background:var(--teal); font-weight:700; cursor:pointer; }
+		button:disabled { opacity:.55; cursor:not-allowed; }
+		.secondary { background:#687782; }
+		.reject { background:var(--danger); }
+		.status { color:var(--muted); padding:20px; }
+		.error { color:var(--danger); }
+		@media (max-width:760px) { .bar { align-items:flex-start; flex-direction:column; } .links { flex-wrap:wrap; gap:12px; } .layout { grid-template-columns:1fr; } .conversations { border-right:0; border-bottom:1px solid var(--line); max-height:230px; overflow:auto; } .chat { min-height:58vh; } .messages { max-height:46vh; } }
+	</style>
+</head>
+<body>
+	<header><div class="bar"><a class="brand" href="index.html">Xây Dựng Kết Nối</a><nav class="links"><a href="customer.html">Yêu cầu</a><a href="cong-viec.html">Công việc / bill</a><a href="skilled-worker.html">Khu vực thợ</a></nav></div></header>
+	<main>
+		<h1>Trò chuyện</h1>
+		<div class="layout">
+			<aside class="conversations" id="conversationList" aria-label="Danh sách hội thoại">Đang tải hội thoại...</aside>
+			<section class="chat" aria-live="polite">
+				<div class="chat-head" id="chatHeader"><strong>Chọn một hội thoại</strong></div>
+				<div class="messages" id="messages"><p class="status">Tin nhắn và thông tin công việc sẽ hiển thị tại đây.</p></div>
+				<div id="decision"></div>
+				<form id="messageForm" class="decide" hidden>
+					<label for="messageText">Tin nhắn</label>
+					<div class="controls"><div class="field"><textarea id="messageText" maxlength="2000" placeholder="Trao đổi chi tiết công việc, lịch làm và vật tư"></textarea></div><button type="submit">Gửi tin nhắn</button></div>
+					<p id="messageStatus" class="muted" role="status"></p>
+				</form>
+			</section>
+		</div>
+	</main>
+	<script src="js/api.js"></script>
+	<script>
+		const user = API.getUser();
+		const token = API.getToken();
+		const params = new URLSearchParams(location.search);
+		const activeId = params.get('id');
+		const list = document.getElementById('conversationList');
+		const header = document.getElementById('chatHeader');
+		const messagesBox = document.getElementById('messages');
+		const decision = document.getElementById('decision');
+		const messageForm = document.getElementById('messageForm');
+		let loading = false;
+		if (!user || !token) location.href = 'dangnhap.html';
+
+		const statusNames = { dang_trao_doi:'Đang trao đổi', cho_khach_duyet:'Chờ khách duyệt giá/lịch', tho_da_nhan:'Khách đã đồng ý, bill đã tạo', tho_tu_choi:'Thợ đã từ chối', khach_tu_choi:'Khách không chọn đề xuất', da_dong:'Đã đóng' };
+		function dateText(value) { return value ? new Date(value).toLocaleString('vi-VN') : ''; }
+
+		async function loadList() {
+			try {
+				const rows = await API.get('/hoi-thoai');
+				list.innerHTML = rows.length ? rows.map((item) => {
+					const otherName = user.role === 'worker' ? item.ten_khach_hang : item.ten_tho;
+					return `<a class="conversation ${String(item.id) === activeId ? 'active' : ''}" href="chat.html?id=${item.id}">
+						<strong>${API.escapeHtml(otherName || 'Cuộc trò chuyện')}</strong><br>
+						<span>${API.escapeHtml(item.tieu_de || 'Trao đổi trực tiếp')}</span><br>
+						<small>${API.escapeHtml(statusNames[item.trang_thai] || item.trang_thai)} · ${API.escapeHtml(item.tin_nhan_cuoi || 'Chưa có tin nhắn')}</small>
+					</a>`;
+				}).join('') : '<p class="status">Chưa có hội thoại. Chọn thợ từ yêu cầu đã đăng để bắt đầu.</p>';
+			} catch (error) { list.textContent = error.message; }
+		}
+
+		function renderMessages(conversation) {
+			const name = user.role === 'worker' ? conversation.ten_khach_hang : conversation.ten_tho;
+			header.innerHTML = `<strong>${API.escapeHtml(conversation.tieu_de || 'Trao đổi công việc')}</strong><br><span class="muted">${API.escapeHtml(name || '')} · ${API.escapeHtml(statusNames[conversation.trang_thai] || conversation.trang_thai)}</span>`;
+			messagesBox.innerHTML = conversation.tin_nhan.length ? conversation.tin_nhan.map((message) => {
+				const system = message.loai === 'he_thong';
+				const mine = Number(message.nguoi_gui_id) === Number(user.id);
+				return `<article class="message ${system ? 'system' : mine ? 'mine' : ''}">${API.escapeHtml(message.noi_dung || '')}${message.tep_url ? `<br><a href="${API.escapeHtml(message.tep_url)}" target="_blank" rel="noopener">Xem tệp đính kèm</a>` : ''}<time>${dateText(message.created_at)}</time></article>`;
+			}).join('') : '<p class="status">Hãy gửi tin nhắn đầu tiên để bắt đầu trao đổi.</p>';
+			messagesBox.scrollTop = messagesBox.scrollHeight;
+			messageForm.hidden = ['da_dong', 'tho_tu_choi', 'khach_tu_choi'].includes(conversation.trang_thai);
+
+			if (user.role === 'worker' && conversation.trang_thai === 'dang_trao_doi') {
+				decision.innerHTML = `<section class="decide"><strong>Gửi giá và lịch dự kiến để khách duyệt</strong>
+					<div class="controls" style="margin-top:10px"><div class="field"><label for="agreedPrice">Giá chốt (đồng)</label><input id="agreedPrice" type="number" min="1" step="1000" required placeholder="Nhập giá hai bên đã thống nhất"></div>
+					<div class="field"><label for="startDate">Ngày bắt đầu</label><input id="startDate" type="date"></div><div class="field"><label for="endDate">Dự kiến hoàn thành</label><input id="endDate" type="date"></div>
+					<button id="sendOffer" type="button">Gửi đề xuất</button><button id="rejectJob" class="reject" type="button">Từ chối yêu cầu</button></div><p id="decisionStatus" role="status"></p></section>`;
+				document.getElementById('sendOffer').addEventListener('click', async () => {
+					const price = Number(document.getElementById('agreedPrice').value);
+					const status = document.getElementById('decisionStatus');
+					if (!Number.isFinite(price) || price <= 0) { status.textContent = 'Nhập giá đề xuất trước khi gửi khách duyệt.'; status.className = 'error'; return; }
+					try {
+						await API.post(`/hoi-thoai/${activeId}/de-xuat`, {
+							gia_chot: price,
+							ngay_bat_dau: document.getElementById('startDate').value || null,
+							ngay_du_kien_xong: document.getElementById('endDate').value || null
+						});
+						await Promise.all([loadConversation(), loadList()]);
+					} catch (error) { status.textContent = error.message; status.className = 'error'; }
+				});
+				document.getElementById('rejectJob').addEventListener('click', async (event) => {
+					event.currentTarget.disabled = true;
+					try { await API.post(`/hoi-thoai/${activeId}/tu-choi`, {}); await loadConversation(); }
+					catch (error) { document.getElementById('decisionStatus').textContent = error.message; event.currentTarget.disabled = false; }
+				});
+			} else if (user.role === 'customer' && conversation.trang_thai === 'cho_khach_duyet') {
+				const price = Number(conversation.gia_de_xuat || 0).toLocaleString('vi-VN');
+				const startDate = conversation.ngay_bat_dau_de_xuat ? new Date(`${conversation.ngay_bat_dau_de_xuat}T00:00:00`).toLocaleDateString('vi-VN') : 'Chưa chốt';
+				const endDate = conversation.ngay_du_kien_xong_de_xuat ? new Date(`${conversation.ngay_du_kien_xong_de_xuat}T00:00:00`).toLocaleDateString('vi-VN') : 'Chưa chốt';
+				decision.innerHTML = `<section class="decide"><strong>Đề xuất của thợ</strong><p>Giá: ${price} đ · Bắt đầu: ${startDate} · Dự kiến xong: ${endDate}</p>
+					<div class="controls"><button id="approveOffer" type="button">Đồng ý, tạo bill</button><button id="declineOffer" class="reject" type="button">Không chọn thợ này</button></div><p id="decisionStatus" role="status"></p></section>`;
+				document.getElementById('approveOffer').addEventListener('click', async (event) => {
+					event.currentTarget.disabled = true;
+					try {
+						const result = await API.post(`/hoi-thoai/${activeId}/chap-nhan-de-xuat`, {});
+						location.href = `cong-viec.html?id=${result.congViecId}`;
+					} catch (error) { document.getElementById('decisionStatus').textContent = error.message; event.currentTarget.disabled = false; }
+				});
+				document.getElementById('declineOffer').addEventListener('click', async (event) => {
+					event.currentTarget.disabled = true;
+					try { await API.post(`/hoi-thoai/${activeId}/tu-choi-de-xuat`, {}); await Promise.all([loadConversation(), loadList()]); }
+					catch (error) { document.getElementById('decisionStatus').textContent = error.message; event.currentTarget.disabled = false; }
+				});
+			} else if (conversation.trang_thai === 'tho_tu_choi') {
+				decision.innerHTML = '<section class="decide">Thợ đã từ chối. Hãy quay lại danh sách gợi ý để chọn thợ khác. <a class="button" href="customer.html#yeu-cau-cua-toi">Quay lại yêu cầu</a></section>';
+			} else if (conversation.trang_thai === 'khach_tu_choi') {
+				decision.innerHTML = '<section class="decide">Bạn đã từ chối đề xuất này. Hãy quay lại yêu cầu để chọn thợ khác.</section>';
+			} else if (conversation.trang_thai === 'cho_khach_duyet') {
+				decision.innerHTML = '<section class="decide">Đề xuất đã gửi. Đang chờ khách hàng xem xét.</section>';
+			} else if (conversation.trang_thai === 'tho_da_nhan') {
+				decision.innerHTML = `<section class="decide">Công việc đã được tạo. <a class="button" href="cong-viec.html?id=${conversation.cong_viec_id}">Mở bill / cập nhật công việc</a></section>`;
+			} else {
+				decision.replaceChildren();
+			}
+		}
+
+		async function loadConversation() {
+			if (!activeId || loading) return;
+			loading = true;
+			try {
+				const conversation = await API.get(`/hoi-thoai/${activeId}`);
+				renderMessages(conversation);
+			} catch (error) { messagesBox.textContent = error.message; }
+			finally { loading = false; }
+		}
+
+		messageForm.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			const text = document.getElementById('messageText').value.trim();
+			const status = document.getElementById('messageStatus');
+			if (!text) { status.textContent = 'Nhập nội dung tin nhắn.'; return; }
+			try {
+				await API.post(`/hoi-thoai/${activeId}/tin-nhan`, { noi_dung: text });
+				document.getElementById('messageText').value = '';
+				status.textContent = 'Đã gửi tin nhắn.';
+				await Promise.all([loadConversation(), loadList()]);
+			} catch (error) { status.textContent = error.message; }
+		});
+
+		loadList();
+		if (activeId) { messageForm.hidden = false; loadConversation(); setInterval(loadConversation, 12000); }
+	</script>
+</body>
+</html>

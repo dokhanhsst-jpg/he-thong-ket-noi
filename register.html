@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng ký | Xây Dựng Kết Nối</title>
+  <style>
+    :root {
+      --navy:#10233F;
+      --navy-deep:#0A1830;
+      --orange:#FF5A1F;
+      --orange-dark:#D8460E;
+      --paper:#F4F1EA;
+      --white:#ffffff;
+      --ink:#1B1F2A;
+      --muted:#677181;
+      --line:rgba(16,35,63,0.12);
+      --blue:#6FA8DC;
+      --light-blue:#EAF4FF;
+      --success:#2E8B57;
+      --shadow:0 18px 35px rgba(16,35,63,0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #f9fafb 0%, #eef5ff 100%);
+      color: var(--ink);
+    }
+    a { text-decoration: none; color: inherit; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+    header {
+      background: rgba(255,255,255,0.96);
+      border-bottom: 1px solid var(--line);
+      position: sticky; top: 0; z-index: 20; backdrop-filter: blur(8px);
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; }
+    .brand-mark {
+      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; background: var(--navy); color: var(--white); font-weight: 700;
+    }
+    .nav-links { display: flex; gap: 22px; color: var(--muted); font-weight: 600; }
+    .nav-links a:hover { color: var(--navy); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 22px; border-radius: 10px; border: none; cursor: pointer;
+      font-weight: 700; font-size: 15px;
+    }
+    .btn-primary { background: var(--orange); color: #fff; }
+    .btn-primary:hover { background: var(--orange-dark); }
+    .btn-secondary { background: #fff; border: 1px solid var(--line); color: var(--navy); }
+
+    .page {
+      min-height: calc(100vh - 72px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 46px 0;
+    }
+    .register-box {
+      width: min(980px, 100%);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .register-grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+    }
+    .left-panel {
+      background: linear-gradient(180deg, var(--navy) 0%, #173a62 100%);
+      color: #fff;
+      padding: 34px 28px;
+    }
+    .left-panel h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.15;
+      margin: 16px 0 12px;
+    }
+    .left-panel p {
+      color: #dfe7f6;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+    .feature-list {
+      list-style: none;
+      margin: 28px 0 0 0; padding: 0;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .feature-list li {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: #eaf1ff;
+    }
+    .feature-list li::before {
+      content: "✓";
+      color: #9cd3ff;
+      margin-right: 8px;
+      font-weight: 700;
+    }
+
+    .right-panel { padding: 34px 28px; }
+    .top-label {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--light-blue);
+      border: 1px solid rgba(111,168,220,0.2);
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .right-panel h2 {
+      font-size: clamp(24px, 2.8vw, 32px);
+      margin: 16px 0 8px;
+    }
+    .subtitle {
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 22px;
+    }
+
+    .role-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .role-option {
+      position: relative;
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px 16px;
+      background: #fff;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .role-option input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .role-option.active {
+      border-color: var(--orange);
+      background: linear-gradient(180deg, #fffaf7 0%, #fff 100%);
+      box-shadow: 0 10px 20px rgba(255,90,31,0.08);
+    }
+    .role-option .title {
+      display: flex; align-items: center; justify-content: space-between;
+      font-weight: 700; font-size: 16px; margin-bottom: 6px;
+    }
+    .role-option .desc {
+      color: var(--muted); font-size: 13px; line-height: 1.6;
+    }
+    .radio-mark {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid var(--line); display: inline-flex; align-items: center; justify-content: center;
+      background: #fff;
+      flex-shrink: 0;
+    }
+    .role-option.active .radio-mark {
+      border-color: var(--orange);
+    }
+    .role-option.active .radio-mark::after {
+      content: "";
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--orange);
+      display: block;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .field { display: flex; flex-direction: column; gap: 8px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-weight: 700; color: var(--navy); font-size: 14px; }
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font: inherit;
+      color: var(--ink);
+    }
+    .password-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .check-row {
+      display: flex; align-items: center; gap: 10px;
+      color: var(--muted); font-size: 14px; margin-top: 4px;
+    }
+    .check-row input { width: auto; }
+    .submit-btn { margin-top: 18px; }
+    .form-message { min-height: 22px; margin: 12px 0 0; color: var(--muted); font-size: 14px; }
+    .form-message.error { color: #b42318; }
+    .form-message.success { color: var(--success); }
+    footer {
+      background: var(--navy-deep);
+      color: #b7c1d6;
+      padding: 34px 0;
+    }
+    .foot {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    }
+    @media (max-width: 880px) {
+      .register-grid { grid-template-columns: 1fr; }
+      .left-panel { order: 2; }
+      .right-panel { order: 1; }
+      .role-options, .form-grid, .password-row { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a href="index.html" class="brand">
+        <div class="brand-mark">H</div>
+        <span>Xây Dựng Kết Nối</span>
+      </a>
+      <nav class="nav-links">
+        <a href="index.html">Trang chủ</a>
+        <a href="customer.html">Khách hàng</a>
+        <a href="worker.html">Thợ lành nghề</a>
+        <a href="skilled-worker.html">Nhận công việc</a>
+        <a href="worker-profile.html">Hồ sơ thợ</a>
+        <a href="my-reviews.html">Đánh giá</a>
+      </nav>
+      <a href="dangnhap.html" class="btn btn-secondary">Đăng nhập</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="wrap">
+      <div class="register-box">
+        <div class="register-grid">
+          <aside class="left-panel">
+            <div class="top-label">Tham gia hệ thống</div>
+            <h1>Đăng ký tài khoản đúng vai trò của bạn.</h1>
+            <p>Chọn loại tài khoản phù hợp để bắt đầu nhanh hơn: nếu bạn cần tìm thợ hoặc có nhu cầu sửa chữa, hãy chọn khách hàng. Nếu bạn là thợ lành nghề, hãy chọn thợ lành nghề.</p>
+            <ul class="feature-list">
+              <li>Đăng ký nhanh, không mất thời gian</li>
+              <li>Chế độ riêng theo từng vai trò</li>
+              <li>Quản lý công việc rõ ràng và minh bạch</li>
+            </ul>
+          </aside>
+
+          <section class="right-panel">
+            <div class="top-label" style="background:#f8fbff;">Tạo tài khoản</div>
+            <h2>Chọn vai trò của bạn</h2>
+            <p class="subtitle">Vui lòng tích chọn đúng mục để hệ thống hiển thị giao diện và quyền phù hợp với bạn.</p>
+
+            <div class="role-options" aria-label="Chọn vai trò">
+              <label class="role-option active" data-role="customer">
+                <input type="radio" name="role" value="customer" checked />
+                <div class="title">
+                  <span>Khách hàng</span>
+                  <span class="radio-mark"></span>
+                </div>
+                <div class="desc">Tôi cần đặt nhu cầu, tìm thợ và quản lý công trình.</div>
+              </label>
+
+              <label class="role-option" data-role="worker">
+                <input type="radio" name="role" value="worker" />
+                <div class="title">
+                  <span>Thợ lành nghề</span>
+                  <span class="radio-mark"></span>
+                </div>
+                <div class="desc">Tôi muốn tạo hồ sơ nghề, nhận việc và nâng uy tín.</div>
+              </label>
+            </div>
+
+            <form id="registerForm">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="fullName">Họ và tên</label>
+                  <input id="fullName" name="name" type="text" placeholder="Nhập họ tên" autocomplete="name" required />
+                </div>
+                <div class="field">
+                  <label for="phone">Số điện thoại</label>
+                  <input id="phone" name="phone" type="tel" placeholder="09xx xxx xxx" autocomplete="tel" required />
+                </div>
+                <div class="field full">
+                  <label for="areaId">Khu vực hoạt động</label>
+                  <select id="areaId" name="areaId" required>
+                    <option value="">Đang tải khu vực...</option>
+                  </select>
+                </div>
+                <div class="field full">
+                  <div class="password-row">
+                    <div class="field">
+                      <label for="password">Mật khẩu</label>
+                      <input id="password" name="password" type="password" placeholder="Nhập mật khẩu (ít nhất 8 ký tự)" autocomplete="new-password" minlength="8" required />
+                    </div>
+                    <div class="field">
+                      <label for="confirmPassword">Xác nhận mật khẩu</label>
+                      <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Nhập lại mật khẩu" autocomplete="new-password" minlength="8" required />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <label class="check-row">
+                <input id="termsAccepted" type="checkbox" checked required />
+                <span>Tôi đồng ý với điều khoản và chính sách bảo mật.</span>
+              </label>
+
+              <button type="submit" class="btn btn-primary submit-btn">Đăng ký tài khoản</button>
+              <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <div><strong style="color:#fff;display:block;margin-bottom:6px">Xây Dựng Kết Nối</strong><span>Hệ thống kết nối khách hàng và thợ lành nghề</span></div>
+      <div>© 2026 | Chọn vai trò và bắt đầu ngay</div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/register.js"></script>
+</body>
+</html>

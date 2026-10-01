@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Lấy lại mật khẩu | Xây Dựng Kết Nối</title>
+	<style>
+		:root { --ink:#172536; --muted:#667283; --line:#dce3e8; --paper:#f4f7f7; --white:#fff; --teal:#147d78; --danger:#b42318; }
+		* { box-sizing:border-box; }
+		body { margin:0; min-height:100vh; display:grid; place-items:center; padding:20px; color:var(--ink); background:linear-gradient(135deg,#eef5f4,#f9f7f2); font:16px/1.5 "Segoe UI",sans-serif; }
+		main { width:min(480px,100%); padding:28px; background:var(--white); border:1px solid var(--line); }
+		a { color:var(--teal); font-weight:700; text-decoration:none; }
+		h1 { margin-top:0; font-size:28px; }
+		p { color:var(--muted); }
+		label { display:block; margin:18px 0 6px; font-weight:700; }
+		input,button { width:100%; padding:12px; font:inherit; }
+		input { border:1px solid #b8c4ca; }
+		button { margin-top:18px; color:#fff; background:var(--teal); border:0; font-weight:700; cursor:pointer; }
+		button:disabled { opacity:.55; }
+		#message.error { color:var(--danger); }
+	</style>
+</head>
+<body>
+	<main>
+		<a href="dangnhap.html">Quay lại đăng nhập</a>
+		<h1>Lấy lại mật khẩu</h1>
+		<p>Nhập số điện thoại đã đăng ký. Mã xác nhận sẽ được gửi qua tin nhắn SMS.</p>
+		<form id="forgotForm">
+			<label for="phone">Số điện thoại</label>
+			<input id="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="09xx xxx xxx" required />
+			<button type="submit">Gửi mã SMS</button>
+			<p id="message" role="status" aria-live="polite"></p>
+		</form>
+	</main>
+	<script src="js/api.js"></script>
+	<script>
+		const form = document.getElementById('forgotForm');
+		const message = document.getElementById('message');
+		form.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			const button = form.querySelector('button');
+			const phone = document.getElementById('phone').value.trim();
+			button.disabled = true;
+			message.textContent = 'Đang gửi yêu cầu...';
+			message.className = '';
+			try {
+				const result = await API.post('/auth/forgot-password', { phone });
+				sessionStorage.setItem('xdkn_reset_phone', phone.replace(/[\s.-]/g, ''));
+				message.textContent = result.message;
+				location.href = 'dat-lai-mat-khau.html';
+			} catch (error) {
+				message.textContent = error.message;
+				message.className = 'error';
+				button.disabled = false;
+			}
+		});
+	</script>
+</body>
+</html>

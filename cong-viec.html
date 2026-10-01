@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Công việc và bill | Xây Dựng Kết Nối</title>
+	<style>
+		:root { --ink:#172536; --muted:#667283; --line:#dce3e8; --paper:#f4f7f7; --white:#fff; --teal:#147d78; --orange:#e65c2f; --danger:#b42318; }
+		* { box-sizing:border-box; }
+		body { margin:0; color:var(--ink); background:var(--paper); font:16px/1.5 "Segoe UI",sans-serif; }
+		a { color:inherit; text-decoration:none; }
+		header { background:var(--white); border-bottom:1px solid var(--line); }
+		.bar,main { max-width:1000px; margin:auto; padding:16px 20px; }
+		.bar { display:flex; justify-content:space-between; gap:16px; }
+		.brand { font-weight:800; }
+		nav { display:flex; gap:18px; color:var(--muted); font-weight:600; }
+		h1 { margin:14px 0 20px; font-size:28px; }
+		.bill { background:var(--white); border:1px solid var(--line); padding:22px; margin-bottom:16px; }
+		.bill h2 { margin:0 0 8px; font-size:21px; }
+		.grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 20px; margin:18px 0; }
+		.metric { border-top:1px solid var(--line); padding-top:10px; }
+		.metric span { display:block; color:var(--muted); font-size:13px; }
+		.actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+		button,.button { display:inline-flex; padding:10px 14px; border:0; color:#fff; background:var(--teal); font:inherit; font-weight:700; cursor:pointer; }
+		.secondary { background:#687782; }
+		.danger { background:var(--danger); }
+		button:disabled { opacity:.55; cursor:not-allowed; }
+		label { display:block; font-weight:700; margin:12px 0 5px; }
+		input,textarea,select { display:block; width:100%; border:1px solid #b8c4ca; padding:10px 12px; font:inherit; background:white; }
+		textarea { min-height:90px; }
+		.progress { padding:12px 0; border-bottom:1px solid var(--line); }
+		.progress small,.muted { color:var(--muted); }
+		.error { color:var(--danger); }
+		.success { color:var(--teal); }
+		.status { padding:14px; background:#eef5f4; }
+		@media(max-width:650px) { .bar { flex-direction:column; } nav { flex-wrap:wrap; gap:12px; } .grid { grid-template-columns:1fr; } .bill { padding:16px; } }
+	</style>
+</head>
+<body>
+	<header><div class="bar"><a class="brand" href="index.html">Xây Dựng Kết Nối</a><nav><a href="chat.html">Trò chuyện</a><a href="customer.html">Yêu cầu</a><a href="skilled-worker.html">Khu vực thợ</a></nav></div></header>
+	<main>
+		<h1>Công việc và bill</h1>
+		<div id="workContent" aria-live="polite">Đang tải...</div>
+	</main>
+	<script src="js/api.js"></script>
+	<script>
+		const user = API.getUser();
+		const content = document.getElementById('workContent');
+		const jobId = new URLSearchParams(location.search).get('id');
+		const statusNames = { cho_xac_nhan:'Chờ thợ bắt đầu', dang_thuc_hien:'Đang thực hiện', hoan_tat:'Hoàn tất', da_huy:'Đã hủy', tranh_chap:'Đang tranh chấp' };
+		const money = (value) => value == null ? 'Chưa có' : `${Number(value).toLocaleString('vi-VN')} đ`;
+		if (!user || !API.getToken()) location.href = 'dangnhap.html';
+
+		function feedback(text, kind = '') {
+			const node = document.getElementById('feedback');
+			if (node) { node.textContent = text; node.className = kind; }
+		}
+
+		async function loadJobs() {
+			try {
+				const rows = await API.get('/cong-viec/me');
+				content.innerHTML = rows.length ? rows.map((job) => `<article class="bill">
+					<h2>${API.escapeHtml(job.tieu_de)}</h2><p>${API.escapeHtml(statusNames[job.trang_thai] || job.trang_thai)} · ${money(job.gia_chot)}</p>
+					<a class="button" href="cong-viec.html?id=${job.id}">Mở bill</a></article>`).join('') : '<p class="status">Chưa có bill nào. Bill sẽ được tạo khi thợ nhận việc trong hội thoại.</p>';
+			} catch (error) { content.textContent = error.message; }
+		}
+
+		async function loadBill() {
+			try {
+				const job = await API.get(`/cong-viec/${jobId}`);
+				const reviews = job.danh_gia || [];
+				const reviewed = reviews.some((review) => Number(review.nguoi_danh_gia_id) === Number(user.id));
+				const confirmed = user.role === 'worker' ? job.tho_xac_nhan_luc : job.khach_xac_nhan_luc;
+				content.innerHTML = `<article class="bill">
+					<h2>${API.escapeHtml(job.tieu_de)}</h2>
+					<div class="grid">
+						<div class="metric"><span>Trạng thái</span><strong>${API.escapeHtml(statusNames[job.trang_thai] || job.trang_thai)}</strong></div>
+						<div class="metric"><span>Giá đã thống nhất</span><strong>${money(job.gia_chot)}</strong></div>
+						<div class="metric"><span>Khách hàng</span><strong>${API.escapeHtml(job.ten_khach_hang)}</strong></div>
+						<div class="metric"><span>Thợ</span><strong>${API.escapeHtml(job.ten_tho)}</strong></div>
+						<div class="metric"><span>Ngày bắt đầu</span><strong>${job.ngay_bat_dau ? new Date(`${job.ngay_bat_dau}T00:00:00`).toLocaleDateString('vi-VN') : 'Chưa thống nhất'}</strong></div>
+						<div class="metric"><span>Dự kiến hoàn thành</span><strong>${job.ngay_du_kien_xong ? new Date(`${job.ngay_du_kien_xong}T00:00:00`).toLocaleDateString('vi-VN') : 'Chưa thống nhất'}</strong></div>
+						<div class="metric"><span>Xác nhận khách</span><strong>${job.khach_xac_nhan_luc ? 'Đã xác nhận' : 'Chưa xác nhận'}</strong></div>
+						<div class="metric"><span>Xác nhận thợ</span><strong>${job.tho_xac_nhan_luc ? 'Đã xác nhận' : 'Chưa xác nhận'}</strong></div>
+					</div>
+					<div class="actions" id="jobActions"></div><p id="feedback" role="status"></p>
+				</article>
+				<section class="bill"><h2>Tiến độ công việc</h2><div id="progressList"></div>
+					${user.role === 'worker' && job.trang_thai === 'dang_thuc_hien' ? `<form id="progressForm"><label for="progressText">Cập nhật tiến độ</label><textarea id="progressText" maxlength="2000" required placeholder="Việc đã làm, vật tư, vấn đề cần khách biết"></textarea><label for="progressPercent">Hoàn thành (%)</label><input id="progressPercent" type="number" min="0" max="100" value="0" required><button type="submit">Lưu tiến độ</button></form>` : ''}
+				</section>
+				${job.trang_thai === 'hoan_tat' ? `<section class="bill"><h2>Đánh giá hai chiều</h2>
+					${reviewed ? '<p class="success">Bạn đã gửi đánh giá cho công việc này.</p>' : `<form id="reviewForm"><label for="stars">Số sao</label><select id="stars" required><option value="5">5 sao - Rất hài lòng</option><option value="4">4 sao - Hài lòng</option><option value="3">3 sao - Bình thường</option><option value="2">2 sao - Chưa tốt</option><option value="1">1 sao - Không hài lòng</option></select><label for="reviewText">Nhận xét</label><textarea id="reviewText" maxlength="2000" placeholder="Chia sẻ trải nghiệm thực tế"></textarea><button type="submit">Gửi đánh giá</button></form>`}
+					<div>${reviews.map((review) => `<p class="progress"><strong>${Number(review.nguoi_danh_gia_id) === Number(job.khach_hang_id) ? 'Khách hàng' : 'Thợ'} · ${review.so_sao}/5</strong><br>${API.escapeHtml(review.noi_dung || '')}</p>`).join('')}</div>
+				</section>` : ''}`;
+
+				const actions = document.getElementById('jobActions');
+				if (user.role === 'worker' && job.trang_thai === 'cho_xac_nhan') actions.insertAdjacentHTML('beforeend', '<button id="startJob">Bắt đầu thực hiện</button>');
+				if (['customer', 'worker'].includes(user.role) && job.trang_thai === 'dang_thuc_hien' && !confirmed) actions.insertAdjacentHTML('beforeend', '<button id="confirmJob">Xác nhận hoàn thành</button>');
+				if (user.role === 'customer' && ['cho_xac_nhan', 'dang_thuc_hien'].includes(job.trang_thai)) actions.insertAdjacentHTML('beforeend', '<button class="danger" id="cancelJob">Hủy công việc</button>');
+				if (job.trang_thai === 'da_huy' && job.ly_do_huy) actions.insertAdjacentHTML('beforeend', `<p>Lý do hủy: ${API.escapeHtml(job.ly_do_huy)}</p>`);
+
+				document.getElementById('progressList').innerHTML = job.tien_do.length ? job.tien_do.map((item) => `<article class="progress"><strong>${Number(item.phan_tram)}%</strong> · ${API.escapeHtml(item.noi_dung)}<br><small>${new Date(item.created_at).toLocaleString('vi-VN')}</small></article>`).join('') : '<p class="muted">Chưa có cập nhật tiến độ.</p>';
+
+				document.getElementById('startJob')?.addEventListener('click', async () => {
+					try { await API.put(`/cong-viec/${jobId}/trang-thai`, { trang_thai:'dang_thuc_hien' }); await loadBill(); }
+					catch (error) { feedback(error.message, 'error'); }
+				});
+				document.getElementById('confirmJob')?.addEventListener('click', async (event) => {
+					event.currentTarget.disabled = true;
+					try { const result = await API.post(`/cong-viec/${jobId}/xac-nhan-hoan-thanh`, {}); feedback(result.message, 'success'); await loadBill(); }
+					catch (error) { feedback(error.message, 'error'); event.currentTarget.disabled = false; }
+				});
+				document.getElementById('cancelJob')?.addEventListener('click', async () => {
+					const reason = prompt('Vui lòng nhập lý do hủy công việc:');
+					if (!reason || !reason.trim()) return;
+					try { await API.put(`/cong-viec/${jobId}/trang-thai`, { trang_thai:'da_huy', ly_do_huy:reason.trim() }); await loadBill(); }
+					catch (error) { feedback(error.message, 'error'); }
+				});
+				document.getElementById('progressForm')?.addEventListener('submit', async (event) => {
+					event.preventDefault();
+					try { await API.post(`/cong-viec/${jobId}/tien-do`, { noi_dung:document.getElementById('progressText').value, phan_tram:Number(document.getElementById('progressPercent').value) }); await loadBill(); }
+					catch (error) { feedback(error.message, 'error'); }
+				});
+				document.getElementById('reviewForm')?.addEventListener('submit', async (event) => {
+					event.preventDefault();
+					try { await API.post('/danh-gia', { cong_viec_id:Number(jobId), so_sao:Number(document.getElementById('stars').value), noi_dung:document.getElementById('reviewText').value }); await loadBill(); }
+					catch (error) { feedback(error.message, 'error'); }
+				});
+			} catch (error) { content.textContent = error.message; }
+		}
+
+		if (jobId) loadBill(); else loadJobs();
+	</script>
+</body>
+</html>

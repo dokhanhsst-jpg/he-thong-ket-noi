@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đánh giá của tôi | Xây Dựng Kết Nối</title>
+  <style>
+    :root {
+      --navy: #10233F;
+      --navy-deep: #0A1830;
+      --orange: #FF5A1F;
+      --orange-dark: #D8460E;
+      --paper: #F4F1EA;
+      --white: #ffffff;
+      --ink: #191E28;
+      --muted: #667283;
+      --line: rgba(16, 35, 63, 0.12);
+      --blue: #6FA8DC;
+      --blue-soft: #EAF4FF;
+      --green: #2D8A5E;
+      --shadow: 0 18px 40px rgba(16, 35, 63, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #f9fafd 0%, #f0f5f9 100%);
+      color: var(--ink);
+    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    button, input, select { font: inherit; }
+    .wrap { max-width: 1220px; margin: 0 auto; padding: 0 20px; }
+
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(10px);
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 76px;
+      gap: 18px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--navy);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .nav-links a:hover { color: var(--navy); }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--orange); color: #fff; }
+    .btn-primary:hover { background: var(--orange-dark); }
+    .btn-secondary { background: #fff; border-color: var(--line); color: var(--navy); }
+
+    .page { padding: 28px 0 60px; }
+
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #173f68 100%);
+      border-radius: 28px;
+      color: #fff;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(111,168,220,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(111,168,220,0.14) 1px, transparent 1px);
+      background-size: 26px 26px;
+      opacity: 0.5;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      align-items: center;
+    }
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #dfeafc;
+    }
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(30px, 3vw, 46px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+    h1 span { color: #a7d4ff; }
+    .lead {
+      max-width: 620px;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #dce8f9;
+      margin-bottom: 24px;
+    }
+
+    .hero-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 22px;
+      padding: 22px;
+      backdrop-filter: blur(6px);
+    }
+    .hero-card-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .hero-card-item {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      color: #ebf3ff;
+    }
+    .hero-card-item::before {
+      content: "→";
+      margin-right: 8px;
+      color: #a7d4ff;
+      font-weight: 800;
+    }
+
+    .main { padding: 52px 0; }
+    .section { margin-bottom: 52px; }
+    .section-head { margin-bottom: 26px; }
+    .section h2 {
+      font-size: clamp(26px, 3vw, 38px);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin: 0 0 12px;
+    }
+    .section-desc {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 600px;
+      margin: 0;
+    }
+    .section-eyebrow {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      border: 1px solid rgba(111,168,220,0.2);
+      color: var(--navy);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .stat-card-value {
+      display: block;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+    .stat-card-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .rating-box {
+      background: linear-gradient(135deg, #fffaf7, #fff);
+      border: 1px solid rgba(255,90,31,0.18);
+      border-radius: 22px;
+      padding: 26px;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .rating-big {
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--orange);
+      margin: 12px 0;
+    }
+    .stars {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      margin: 12px 0;
+    }
+    .star {
+      color: var(--orange);
+      font-size: 20px;
+    }
+    .rating-text {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
+    }
+    .filter-chip {
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+      color: var(--navy);
+    }
+    .filter-chip:hover, .filter-chip.active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #fff;
+    }
+
+    .reviews-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .review-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      transition: 0.2s ease;
+    }
+    .review-card:hover {
+      border-color: var(--blue);
+      box-shadow: 0 12px 32px rgba(111,168,220,0.12);
+    }
+
+    .review-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .reviewer-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .reviewer-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--blue-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--navy);
+      flex-shrink: 0;
+    }
+    .reviewer-details h4 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .reviewer-details p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .review-rating {
+      display: flex;
+      gap: 2px;
+    }
+
+    .review-text {
+      color: var(--ink);
+      line-height: 1.8;
+      margin: 14px 0;
+      padding: 14px;
+      background: #f8fbff;
+      border-left: 3px solid var(--blue);
+      border-radius: 8px;
+    }
+
+    .review-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .review-project {
+      background: var(--blue-soft);
+      border: 1px solid rgba(111,168,220,0.2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--navy);
+      margin-top: 12px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 52px 20px;
+    }
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 18px;
+    }
+    .empty-state h3 {
+      margin: 0 0 8px;
+      font-size: 22px;
+      color: var(--navy);
+    }
+    .empty-state p {
+      margin: 0 0 22px;
+      color: var(--muted);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    footer {
+      background: var(--navy-deep);
+      color: #b7c3d9;
+      padding: 32px 0;
+      margin-top: 52px;
+    }
+    .foot {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    @media (max-width: 980px) {
+      .hero-content { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .filter-bar { justify-content: center; }
+    }
+    @media (max-width: 720px) {
+      .nav-links { display: none; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .review-header { flex-direction: column; }
+      .review-rating { margin-top: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">H</span>
+        <span>Xây Dựng Kết Nối</span>
+      </a>
+      <nav class="nav-links">
+        <a href="index.html">Trang chủ</a>
+        <a href="worker.html">Hồ sơ thợ</a>
+        <a href="skilled-worker.html">Công việc</a>
+        <a href="#danh-gia">Đánh giá của tôi</a>
+      </nav>
+      <div class="nav-actions" id="navActions">
+        <a href="dangnhap.html" class="btn btn-secondary">Đăng xuất</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page wrap">
+    <section class="hero">
+      <div class="hero-content">
+        <div>
+          <span class="eyebrow">Đánh giá từ khách hàng</span>
+          <h1>Xem đánh giá<br><span>về bản thân mình</span></h1>
+          <p class="lead">Những nhận xét chân thật từ khách hàng đã sử dụng dịch vụ của bạn. Đây là tài sản quý giá để xây dựng uy tín và phát triển kỹ năng.</p>
+        </div>
+
+        <div class="hero-card">
+          <div class="hero-card-stat">
+            <div class="hero-card-item">Đánh giá giúp xây dựng uy tín</div>
+            <div class="hero-card-item" style="margin-top: 8px;">Khách hàng tìm kiếm thợ có đánh giá cao</div>
+            <div class="hero-card-item" style="margin-top: 8px;">Nhiều đánh giá tốt = nhiều công việc</div>
+            <div class="hero-card-item" style="margin-top: 8px;">Trả lời, cảm ơn khách phát triển quan hệ</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="main" id="danh-gia">
+      <div class="rating-box">
+        <div style="color: var(--muted); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; font-size: 11px;">Đánh giá tổng hợp</div>
+        <div class="rating-big">4.9</div>
+        <div class="stars">
+          <span class="star">★</span>
+          <span class="star">★</span>
+          <span class="star">★</span>
+          <span class="star">★</span>
+          <span class="star">★</span>
+        </div>
+        <div class="rating-text">Dựa trên 142 đánh giá từ khách hàng</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-card-value">142</span>
+          <span class="stat-card-label">Tổng đánh giá</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card-value">139</span>
+          <span class="stat-card-label">5 ⭐ (97%)</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card-value">3</span>
+          <span class="stat-card-label">4 ⭐ (2%)</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card-value">0</span>
+          <span class="stat-card-label">Dưới 4 ⭐</span>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Tất cả đánh giá (142)</h2>
+          <p class="section-desc">Sắp xếp từ mới nhất. Bạn có thể trả lời hoặc cảm ơn khách hàng để xây dựng quan hệ tốt hơn.</p>
+        </div>
+
+        <div class="filter-bar">
+          <div class="filter-chip active">Tất cả (142)</div>
+          <div class="filter-chip">5 ⭐ (139)</div>
+          <div class="filter-chip">4 ⭐ (3)</div>
+          <div class="filter-chip">Chưa trả lời (8)</div>
+        </div>
+
+        <div class="reviews-container">
+          <div class="review-card">
+            <div class="review-header">
+              <div class="reviewer-info">
+                <div class="reviewer-avatar">NK</div>
+                <div class="reviewer-details">
+                  <h4>Nguyễn Kim</h4>
+                  <p>Khách hàng • Hoàn Kiếm</p>
+                </div>
+              </div>
+              <div class="review-rating">
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+              </div>
+            </div>
+            <div class="review-text">Thợ Anh rất chuyên nghiệp! Thợ đã giúp mình sửa trần, tường, sơn lại toàn bộ phòng khách. Công việc thực hiện nhanh, sạch sẽ, không để bụi bẩn trong nhà. Chất lượng rất tốt, khách hàng rất hài lòng. Sẽ tiếp tục sử dụng dịch vụ của thợ vào lần sau.</div>
+            <div class="review-project">
+              📦 Dự án: Sửa trần, tường, sơn lại phòng khách | 15 tháng 1, 2026
+            </div>
+            <div class="review-meta">
+              <div class="meta-item">👍 25 người tìm hữu ích</div>
+              <div class="meta-item">💬 <a href="#" style="color: var(--blue);">Trả lời</a></div>
+              <div class="meta-item">❤️ <a href="#" style="color: var(--blue);">Cảm ơn</a></div>
+            </div>
+          </div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div class="reviewer-info">
+                <div class="reviewer-avatar">TH</div>
+                <div class="reviewer-details">
+                  <h4>Trần Hải</h4>
+                  <p>Khách hàng • Hai Bà Trưng</p>
+                </div>
+              </div>
+              <div class="review-rating">
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+              </div>
+            </div>
+            <div class="review-text">Phản hồi nhanh, báo giá rõ ràng, không có chi phí bất ngờ. Thợ Anh làm việc đúng tiến độ, đặc biệt là kỹ năng rất cao. Tôi thuê để cải tạo bếp và phòng tắm, kết quả hơn kỳ vọng. Giá cả hợp lý, chất lượng cao. Rất đáng để khuyến cáo cho bạn bè.</div>
+            <div class="review-project">
+              📦 Dự án: Cải tạo bếp và phòng tắm | 8 tháng 1, 2026
+            </div>
+            <div class="review-meta">
+              <div class="meta-item">👍 18 người tìm hữu ích</div>
+              <div class="meta-item">💬 <a href="#" style="color: var(--blue); text-decoration: line-through;">Trả lời</a> Đã trả lời</div>
+              <div class="meta-item">❤️ <a href="#" style="color: var(--blue);">Cảm ơn</a></div>
+            </div>
+          </div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div class="reviewer-info">
+                <div class="reviewer-avatar">LH</div>
+                <div class="reviewer-details">
+                  <h4>Lê Hương</h4>
+                  <p>Khách hàng • Thanh Xuân</p>
+                </div>
+              </div>
+              <div class="review-rating">
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+              </div>
+            </div>
+            <div class="review-text">Công việc tốt, thợ rất vui vẻ, nhiệt tình hỗ trợ. Tuy nhiên thời gian hoàn thành hơi kéo dài 1-2 ngày so với cam kết ban đầu. Nhưng chất lượng rất tốt, sẽ sử dụng lại.</div>
+            <div class="review-project">
+              📦 Dự án: Sửa chữa sàn gỗ | 22 tháng 12, 2025
+            </div>
+            <div class="review-meta">
+              <div class="meta-item">👍 12 người tìm hữu ích</div>
+              <div class="meta-item">💬 <a href="#" style="color: var(--blue);">Trả lời</a></div>
+              <div class="meta-item">❤️ <a href="#" style="color: var(--blue);">Cảm ơn</a></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <div><strong style="color:#fff;display:block;margin-bottom:6px;">Xây Dựng Kết Nối</strong><span>Nền tảng kết nối thợ lành nghề với khách hàng — chuyên nghiệp, uy tín, hiệu quả</span></div>
+      <div>© 2026 | Xem đánh giá của tôi</div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script>API.initNav('worker');</script>
+</body>
+</html>
